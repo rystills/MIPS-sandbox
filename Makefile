@@ -1,2 +1,11 @@
+OSFLAG :=
+ifeq ($(OS),Windows_NT)     # is Windows_NT on XP, 2000, 7, Vista, 10...
+    detected_OS := Windows
+	CFLAGS += -lgdiplus -lshlwapi
+else
+    detected_OS := $(shell uname)  # same as "uname -s"
+	CFLAGS += `sdl2-config --cflags --libs` -lGL
+endif
+
 make: src/MIPS-sandbox.c
-	gcc -Wall  src/MIPS-sandbox.c -o main.out -lm -I. `sdl2-config --cflags --libs` -lGL
+	gcc -Wall src/MIPS-sandbox.c -o main.exe -lm -I. $(CFLAGS)
