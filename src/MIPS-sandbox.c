@@ -1,4 +1,5 @@
-#include "nuklear_cross.h"
+#define NKC_IMPLEMENTATION
+#include "../nuklear_cross/nuklear_cross.h"
 #include <stdio.h>
 
 enum radioOptions {
