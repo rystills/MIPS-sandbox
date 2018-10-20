@@ -56,7 +56,13 @@ void mainLoop(void* loopArg){
 }
 
 int main(){
-    struct my_nkc_app myapp;
+	//manual vbuf for output flushing on windows to fix Eclipse failing to display output
+	#ifdef _WIN32
+		setvbuf(stdout, NULL, _IONBF, 0);
+		setvbuf(stderr, NULL, _IONBF, 0);
+	#endif
+
+	struct my_nkc_app myapp;
     struct nkc nkcx; /* Allocate memory for Nuklear+ handle */
     myapp.nkcHandle = &nkcx;
     /* init some user data */
