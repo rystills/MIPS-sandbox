@@ -21,7 +21,7 @@ or run make (if you have minGW installed with make somewhere in your system path
 -uncheck "Generate Makefiles automatically"  
 -add the following makefile to your Debug/Release folder:  
 ```OSFLAG :=
-ifeq ($(OS),Windows_NT)     # is Windows_NT on XP, 2000, 7, Vista, 10...
+ifeq ($(OS),Windows_NT)
     detected_OS := Windows
 	CFLAGS += -lgdiplus -lshlwapi
 else
@@ -29,9 +29,8 @@ else
 	CFLAGS += `sdl2-config --cflags --libs` -lGL
 endif
 
-src/MIPS-sandbox.c: src/MIPS-sandbox.c
-	gcc -Wall ../src/MIPS-sandbox.c -o MIPS-sandbox.exe -lm -I. $(CFLAGS)
+src/MIPS-sandbox.c: 
 
 all: src/MIPS-sandbox.c
-	gcc -Wall src/MIPS-sandbox.c -o main.exe -lm -I. $(CFLAGS)```  
-Note that the Eclipse console will generate an error for target 'all', but that can be safely ignored (I'll find a proper fix for that later)
+	gcc -Wall ../src/MIPS-sandbox.c -o MIPS-sandbox.exe -lm -I. $(CFLAGS)
+```  

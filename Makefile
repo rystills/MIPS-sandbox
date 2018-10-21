@@ -1,5 +1,5 @@
 OSFLAG :=
-ifeq ($(OS),Windows_NT)     # is Windows_NT on XP, 2000, 7, Vista, 10...
+ifeq ($(OS),Windows_NT)
     detected_OS := Windows
 	CFLAGS += -lgdiplus -lshlwapi
 else
