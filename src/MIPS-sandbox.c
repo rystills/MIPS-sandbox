@@ -15,6 +15,10 @@ struct my_nkc_app {
     enum radioOptions op;
 };
 
+static int show_menu = nk_true;
+static int show_app_about = nk_false;
+
+
 void mainLoop(void* loopArg){
     struct my_nkc_app* myapp = (struct my_nkc_app*)loopArg;
     struct nk_context *ctx = nkc_get_ctx(myapp->nkcHandle);
@@ -25,29 +29,27 @@ void mainLoop(void* loopArg){
     }
 
     /* Nuklear GUI code */
-    if (nk_begin(ctx, "Show", nk_rect(50, 50, 220, 220),
-        NK_WINDOW_BORDER|NK_WINDOW_MOVABLE|NK_WINDOW_CLOSABLE)) {
-        /* fixed widget pixel width */
-        nk_layout_row_static(ctx, 30, 80, 1);
-        if (nk_button_label(ctx, "button")) {
-            /* event handling */
-            printf("Button pressed\n");
-        }
-
-        /* fixed widget window ratio width */
-        nk_layout_row_dynamic(ctx, 30, 2);
-        if (nk_option_label(ctx, "easy", myapp->op == EASY)) myapp->op = EASY;
-        if (nk_option_label(ctx, "hard", myapp->op == HARD)) myapp->op = HARD;
-
-        /* custom widget pixel width */
-        nk_layout_row_begin(ctx, NK_STATIC, 30, 2);
-        {
-            nk_layout_row_push(ctx, 50);
-            nk_label(ctx, "Volume:", NK_TEXT_LEFT);
-            nk_layout_row_push(ctx, 110);
-            nk_slider_float(ctx, 0, &(myapp->value), 1.0f, 0.1f);
-        }
-        nk_layout_row_end(ctx);
+    int window_flags = 0;
+    if (nk_begin(ctx, "mainMenu", nk_rect(0,0,1280,34), window_flags)) {
+        nk_menubar_begin(ctx);
+        			nk_layout_row_begin(ctx, NK_STATIC, 25, 5);
+                    nk_layout_row_push(ctx, 45);
+                    if (nk_menu_begin_label(ctx, "File", NK_TEXT_LEFT, nk_vec2(120, 65)))
+                    {
+                        static size_t prog = 40;
+                        static int slider = 10;
+                        static int check = nk_true;
+                        nk_layout_row_dynamic(ctx, 25, 1);
+                        if (nk_menu_item_label(ctx, "Save", NK_TEXT_LEFT))
+                            show_menu = nk_false;
+                        if (nk_menu_item_label(ctx, "Load", NK_TEXT_LEFT))
+                            show_app_about = nk_true;
+                        nk_progress(ctx, &prog, 100, NK_MODIFIABLE);
+                        nk_slider_int(ctx, 0, &slider, 16, 1);
+                        nk_checkbox_label(ctx, "check", &check);
+                        nk_menu_end(ctx);
+                    }
+		nk_menubar_end(ctx);
     }
     nk_end(ctx);
     /* End Nuklear GUI */
@@ -69,7 +71,7 @@ int main(){
     myapp.value = 0.4;
     myapp.op = HARD;
 
-    if( nkc_init( myapp.nkcHandle, "Nuklear+ Example", 640, 480, NKC_WIN_NORMAL ) ){
+    if( nkc_init( myapp.nkcHandle, "Nuklear+ Example", 1280, 720, NKC_WIN_NORMAL) ){
         printf("Successfull init. Starting 'infinite' main loop...\n");
         nkc_set_main_loop(myapp.nkcHandle, mainLoop, (void*)&myapp );
     } else {
