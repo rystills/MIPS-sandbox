@@ -17,7 +17,7 @@ struct my_nkc_app {
 
 static int show_menu = nk_true;
 static int show_app_about = nk_false;
-
+static int check = nk_false;
 
 void mainLoop(void* loopArg){
     struct my_nkc_app* myapp = (struct my_nkc_app*)loopArg;
@@ -32,23 +32,24 @@ void mainLoop(void* loopArg){
     int window_flags = 0;
     if (nk_begin(ctx, "mainMenu", nk_rect(0,0,1280,34), window_flags)) {
         nk_menubar_begin(ctx);
-        			nk_layout_row_begin(ctx, NK_STATIC, 25, 5);
-                    nk_layout_row_push(ctx, 45);
-                    if (nk_menu_begin_label(ctx, "File", NK_TEXT_LEFT, nk_vec2(120, 65)))
-                    {
-                        static size_t prog = 40;
-                        static int slider = 10;
-                        static int check = nk_true;
-                        nk_layout_row_dynamic(ctx, 25, 1);
-                        if (nk_menu_item_label(ctx, "Save", NK_TEXT_LEFT))
-                            show_menu = nk_false;
-                        if (nk_menu_item_label(ctx, "Load", NK_TEXT_LEFT))
-                            show_app_about = nk_true;
-                        nk_progress(ctx, &prog, 100, NK_MODIFIABLE);
-                        nk_slider_int(ctx, 0, &slider, 16, 1);
-                        nk_checkbox_label(ctx, "check", &check);
-                        nk_menu_end(ctx);
-                    }
+
+		nk_layout_row_begin(ctx, NK_STATIC, 25, 5);
+		nk_layout_row_push(ctx, 45);
+		if (nk_menu_begin_label(ctx, "File", NK_TEXT_LEFT, nk_vec2(120, 300))) {
+			nk_layout_row_dynamic(ctx, 25, 1);
+			if (nk_menu_item_label(ctx, "Save", NK_TEXT_LEFT))
+				show_menu = nk_false;
+			if (nk_menu_item_label(ctx, "Load", NK_TEXT_LEFT))
+				show_app_about = nk_true;
+			nk_menu_end(ctx);
+		}
+		nk_layout_row_push(ctx, 45);
+		if (nk_menu_begin_label(ctx, "Options", NK_TEXT_LEFT, nk_vec2(120, 300))) {
+			nk_layout_row_dynamic(ctx, 25, 1);
+			nk_checkbox_label(ctx, "some tickbox", &check);
+			nk_menu_end(ctx);
+		}
+
 		nk_menubar_end(ctx);
     }
     nk_end(ctx);
