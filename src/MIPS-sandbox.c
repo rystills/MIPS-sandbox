@@ -15,8 +15,6 @@ struct my_nkc_app {
     enum radioOptions op;
 };
 
-static int show_menu = nk_true;
-static int show_app_about = nk_false;
 static int check = nk_false;
 
 void mainLoop(void* loopArg){
@@ -30,7 +28,8 @@ void mainLoop(void* loopArg){
 
     /* Nuklear GUI code */
     int window_flags = 0;
-    if (nk_begin(ctx, "mainMenu", nk_rect(0,0,1280,34), window_flags)) {
+    //todo: find a more elegant way to fit the menubar horizontally than 9999999
+    if (nk_begin(ctx, "mainMenu", nk_rect(0,0,9999999,34), window_flags)) {
         nk_menubar_begin(ctx);
 
 		nk_layout_row_begin(ctx, NK_STATIC, 25, 5);
@@ -38,9 +37,9 @@ void mainLoop(void* loopArg){
 		if (nk_menu_begin_label(ctx, "File", NK_TEXT_LEFT, nk_vec2(120, 300))) {
 			nk_layout_row_dynamic(ctx, 25, 1);
 			if (nk_menu_item_label(ctx, "Save", NK_TEXT_LEFT))
-				show_menu = nk_false;
+				; //TODO: save file
 			if (nk_menu_item_label(ctx, "Load", NK_TEXT_LEFT))
-				show_app_about = nk_true;
+				; //TODO: load file
 			nk_menu_end(ctx);
 		}
 		nk_layout_row_push(ctx, 45);
