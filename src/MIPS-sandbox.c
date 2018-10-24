@@ -3,11 +3,46 @@
 #include <stdio.h>
 //inttypes allows us to guarantee n-bit ints
 #include <inttypes.h>
+#include <stdbool.h>
 #define NUMREGISTERS 32
+#define REGISTERLEN 12
 
 static int check = nk_false;
 //signed 32 bit max val = 2,147,483,647, or 10 digits; need 3 additional digits for optional - sign and \0
-char registers [NUMREGISTERS][12];
+char registers [NUMREGISTERS][REGISTERLEN];
+
+/**
+ * check if the specified register contents are invalid; if so, set register style to force red highlight
+ * @param regNum: the register number to check
+ * @param ctx: the current nuklear context
+ * @returns: whether the specified register is invalid (true) or not (false)
+ */
+bool checkSetInvalidRegisterContents(int regNum, struct nk_context *ctx) {
+	for (int i = 0; i < REGISTERLEN; ++i) {
+		if (!((i == 0 && registers[regNum][i] == '-') || isdigit(registers[regNum][i]) || registers[regNum][i] == '\0')) {
+			ctx->style.edit.normal.data.color =nk_rgb(255,0,0);
+			ctx->style.edit.active.data.color =nk_rgb(255,0,0);
+			ctx->style.edit.hover.data.color =nk_rgb(255,0,0);
+			return true;
+		}
+	}
+	return false;
+}
+
+/**
+ * reset the 'edit' style (used for register input) to default
+ * @param ctx: the current nuklear context
+ */
+void clearRegisterStyle(struct nk_context *ctx) {
+	ctx->style.edit.normal.data.color = nk_rgb(38,38,38);
+	ctx->style.edit.active.data.color = nk_rgb(38,38,38);
+	ctx->style.edit.hover.data.color = nk_rgb(38,38,38);
+}
+
+/**
+ * infinite main loop for our program; runs the nuklear GUI as well as all program logic
+ * @param nkcPointer: void* pointer to our nuklear nkc struct
+ */
 void mainLoop(void* nkcPointer){
     struct nk_context *ctx = ((struct nkc*)nkcPointer)->ctx;
 
@@ -47,7 +82,10 @@ void mainLoop(void* nkcPointer){
     if (nk_begin(ctx, "registers", nk_rect(0,36,640,480), window_flags)) {
     	for (int i = 0; i < NUMREGISTERS; ++i) {
 			nk_layout_row_dynamic(ctx, 25, 1);
+			checkSetInvalidRegisterContents(i,ctx);
 			nk_edit_string_zero_terminated (ctx, NK_EDIT_FIELD, registers[i], sizeof(registers[i]), nk_filter_default);
+			//printf("%d%d%d\n",ctx->style.edit.normal.data.color.r,ctx->style.edit.normal.data.color.g,ctx->style.edit.normal.data.color.b);
+			clearRegisterStyle(ctx);
     	}
     	nk_end(ctx);
     }
