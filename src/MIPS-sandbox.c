@@ -10,6 +10,40 @@
 static int check = nk_false;
 //signed 32 bit max val = 2,147,483,647, or 10 digits; need 3 additional digits for optional - sign and \0
 char registers [NUMREGISTERS][REGISTERLEN];
+char registerNames [NUMREGISTERS][6] = {
+		"$zero",
+		"$at",
+		"$v0",
+		"$v1",
+		"$a0",
+		"$a1",
+		"$a2",
+		"$a3",
+		"$t0",
+		"$t1",
+		"$t2",
+		"$t3",
+		"$t4",
+		"$t5",
+		"$t6",
+		"$t7",
+		"$s0",
+		"$s1",
+		"$s2",
+		"$s3",
+		"$s4",
+		"$s5",
+		"$s6",
+		"$s7",
+		"$t8",
+		"$t9",
+		"$k0",
+		"$k1",
+		"$gp",
+		"$sp",
+		"$fp",
+		"$ra"
+};
 
 /**
  * check if the specified register contents are invalid; if so, set register style to force red highlight
@@ -79,11 +113,12 @@ void mainLoop(void* nkcPointer){
     }
 
     window_flags = NK_WINDOW_BORDER;
-    if (nk_begin(ctx, "registers", nk_rect(0,36,640,480), window_flags)) {
+    if (nk_begin(ctx, "registers", nk_rect(0,36,220,686), window_flags)) {
     	for (int i = 0; i < NUMREGISTERS; ++i) {
-			nk_layout_row_dynamic(ctx, 25, 1);
+			nk_layout_row_dynamic(ctx, 25, 2);
 			checkSetInvalidRegisterContents(i,ctx);
-			nk_edit_string_zero_terminated (ctx, NK_EDIT_FIELD, registers[i], sizeof(registers[i]), nk_filter_default);
+			nk_label(ctx, registerNames[i], NK_TEXT_LEFT);
+			nk_edit_string_zero_terminated(ctx, NK_EDIT_SIMPLE, registers[i], sizeof(registers[i]), nk_filter_decimal);
 			//printf("%d%d%d\n",ctx->style.edit.normal.data.color.r,ctx->style.edit.normal.data.color.g,ctx->style.edit.normal.data.color.b);
 			clearRegisterStyle(ctx);
     	}
@@ -102,7 +137,7 @@ int main(){
 	#endif
 
     struct nkc nkcx;
-    if( nkc_init(&nkcx, "Nuklear+ Example", 1280, 720, NKC_WIN_NORMAL) )
+    if( nkc_init(&nkcx, "MIPS Simulator", 1280, 720, NKC_WIN_NORMAL) )
         nkc_set_main_loop(&nkcx, mainLoop,(void*)&nkcx);
     else
         printf("Can't init NKC\n");
