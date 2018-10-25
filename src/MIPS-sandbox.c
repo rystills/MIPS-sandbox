@@ -7,6 +7,9 @@
 #define NUMREGISTERS 32
 #define REGISTERLEN 12
 
+extern int screenWidth;
+extern int screenHeight;
+
 static int check = nk_false;
 //signed 32 bit max val = 2,147,483,647, or 10 digits; need 3 additional digits for optional - sign and \0
 char registers [NUMREGISTERS][REGISTERLEN];
