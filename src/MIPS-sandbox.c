@@ -88,10 +88,9 @@ void mainLoop(void* nkcPointer){
     if( (e.type == NKC_EWINDOW) && (e.window.param == NKC_EQUIT) )
         nkc_stop_main_loop((struct nkc*)nkcPointer);
 
-    //todo: find a more elegant way to fit the menubar horizontally than 9999999
     //menubar window
     int window_flags = 0;
-    if (nk_begin(ctx, "mainMenu", nk_rect(0,0,9999999,34), window_flags)) {
+    if (nk_begin(ctx, "mainMenu", nk_rect(0,0,screenWidth,34), window_flags)) {
         nk_menubar_begin(ctx);
 		nk_layout_row_begin(ctx, NK_STATIC, 25, 5);
 		nk_layout_row_push(ctx, 45);
@@ -115,7 +114,7 @@ void mainLoop(void* nkcPointer){
     }
     //register window
     window_flags = NK_WINDOW_BORDER | NK_WINDOW_BACKGROUND;
-    if (nk_begin(ctx, "registers", nk_rect(0,34,220,1000), window_flags)) {
+    if (nk_begin(ctx, "registers", nk_rect(0,34,220,screenHeight - 34), window_flags)) {
     	nk_layout_row_dynamic(ctx, 25, 2);
     	nk_label(ctx, "Integer Register", NK_TEXT_LEFT);
     	nk_label(ctx, "Value", NK_TEXT_LEFT);
