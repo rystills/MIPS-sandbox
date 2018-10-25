@@ -47,6 +47,41 @@ char registerNames [NUMREGISTERS][6] = {
 		"$fp",
 		"$ra"
 };
+char registerTips [NUMREGISTERS][105] = {
+		"register hard-coded to the value 0; unchangeable",
+		"register reserved for pseudo-instructions",
+		"return Value 0 from function call",
+		"return Value 1 from function call",
+		"Argument 0 to function call. Not preserved by subprograms",
+		"Argument 1 to function call. Not preserved by subprograms",
+		"Argument 2 to function call. Not preserved by subprograms",
+		"Argument 3 to function call. Not preserved by subprograms",
+		"Temporary register 0; not preserved by subprograms",
+		"Temporary register 1; not preserved by subprograms",
+		"Temporary register 2; not preserved by subprograms",
+		"Temporary register 3; not preserved by subprograms",
+		"Temporary register 4; not preserved by subprograms",
+		"Temporary register 5; not preserved by subprograms",
+		"Temporary register 6; not preserved by subprograms",
+		"Temporary register 7; not preserved by subprograms",
+		"Saved storage register 0; preserved by subprograms",
+		"Saved storage register 1; preserved by subprograms",
+		"Saved storage register 2; preserved by subprograms",
+		"Saved storage register 3; preserved by subprograms",
+		"Saved storage register 4; preserved by subprograms",
+		"Saved storage register 5; preserved by subprograms",
+		"Saved storage register 6; preserved by subprograms",
+		"Saved storage register 7; preserved by subprograms",
+		"Temporary register 8; not preserved by subprograms",
+		"Temporary register 9; not preserved by subprograms",
+		"register 0 reserved for Kernel.",
+		"register 1 reserved for Kernel.",
+		"Global area Pointer; points to the middle of the 64k memory block. Useful for creating global variables",
+		"Stack Pointer; points to the top of the stack",
+		"Frame Pointer; points to the active frame of the stack",
+		"Return Address; stores the address of the next instruction to return to. Useful upon function termination"
+
+};
 
 /**
  * check if the specified register contents are invalid; if so, set register style to force red highlight
@@ -81,9 +116,13 @@ void clearRegisterStyle(struct nk_context *ctx) {
  * @param nkcPointer: void* pointer to our nuklear nkc struct
  */
 void mainLoop(void* nkcPointer){
-	printf("%d,%d\n",screenWidth,screenHeight);
     struct nk_context *ctx = ((struct nkc*)nkcPointer)->ctx;
 
+    //reusable vars
+    struct nk_rect bounds;
+    const struct nk_input *in = &ctx->input;
+
+    //poll events
     union nkc_event e = nkc_poll_events((struct nkc*)nkcPointer);
     if( (e.type == NKC_EWINDOW) && (e.window.param == NKC_EQUIT) )
         nkc_stop_main_loop((struct nkc*)nkcPointer);
@@ -98,6 +137,8 @@ void mainLoop(void* nkcPointer){
 			nk_layout_row_dynamic(ctx, 25, 1);
 			if (nk_menu_item_label(ctx, "Save", NK_TEXT_LEFT))
 				; //TODO: save file
+			if (nk_menu_item_label(ctx, "Save As", NK_TEXT_LEFT))
+				; //TODO: save file select name
 			if (nk_menu_item_label(ctx, "Load", NK_TEXT_LEFT))
 				; //TODO: load file
 			nk_menu_end(ctx);
@@ -121,10 +162,18 @@ void mainLoop(void* nkcPointer){
     	for (int i = 0; i < NUMREGISTERS; ++i) {
 			nk_layout_row_dynamic(ctx, 25, 2);
 			checkSetInvalidRegisterContents(i,ctx);
+			//tooltip
+			bounds = nk_widget_bounds(ctx);
+			if (nk_input_is_mouse_hovering_rect(in, bounds)) {
+				nk_tooltip(ctx,registerTips[i]);
+			}
 			nk_label(ctx, registerNames[i], NK_TEXT_LEFT);
 			nk_edit_string_zero_terminated(ctx, NK_EDIT_SIMPLE, registers[i], sizeof(registers[i]), nk_filter_decimal);
 			clearRegisterStyle(ctx);
+
     	}
+    	registers[0][0] = '0';
+    	registers[0][1] = '\0';
     	nk_end(ctx);
     }
     nkc_render((struct nkc*)nkcPointer, nk_rgb(60,60,60) );
