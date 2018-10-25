@@ -78,19 +78,18 @@ void clearRegisterStyle(struct nk_context *ctx) {
  * @param nkcPointer: void* pointer to our nuklear nkc struct
  */
 void mainLoop(void* nkcPointer){
+	printf("%d,%d\n",screenWidth,screenHeight);
     struct nk_context *ctx = ((struct nkc*)nkcPointer)->ctx;
 
     union nkc_event e = nkc_poll_events((struct nkc*)nkcPointer);
     if( (e.type == NKC_EWINDOW) && (e.window.param == NKC_EQUIT) )
         nkc_stop_main_loop((struct nkc*)nkcPointer);
 
-    /* Nuklear GUI code */
-    int window_flags = 0;
     //todo: find a more elegant way to fit the menubar horizontally than 9999999
-    //nk_style_push_color(ctx, &s->window.background, nk_rgba(255,0,0,255));
+    //menubar window
+    int window_flags = 0;
     if (nk_begin(ctx, "mainMenu", nk_rect(0,0,9999999,34), window_flags)) {
         nk_menubar_begin(ctx);
-
 		nk_layout_row_begin(ctx, NK_STATIC, 25, 5);
 		nk_layout_row_push(ctx, 45);
 		if (nk_menu_begin_label(ctx, "File", NK_TEXT_LEFT, nk_vec2(120, 300))) {
@@ -111,21 +110,21 @@ void mainLoop(void* nkcPointer){
 		nk_menubar_end(ctx);
 		nk_end(ctx);
     }
-
-    window_flags = NK_WINDOW_BORDER;
-    if (nk_begin(ctx, "registers", nk_rect(0,36,220,686), window_flags)) {
+    //register window
+    window_flags = NK_WINDOW_BORDER | NK_WINDOW_BACKGROUND;
+    if (nk_begin(ctx, "registers", nk_rect(0,34,220,1000), window_flags)) {
+    	nk_layout_row_dynamic(ctx, 25, 2);
+    	nk_label(ctx, "Integer Register", NK_TEXT_LEFT);
+    	nk_label(ctx, "Value", NK_TEXT_LEFT);
     	for (int i = 0; i < NUMREGISTERS; ++i) {
 			nk_layout_row_dynamic(ctx, 25, 2);
 			checkSetInvalidRegisterContents(i,ctx);
 			nk_label(ctx, registerNames[i], NK_TEXT_LEFT);
 			nk_edit_string_zero_terminated(ctx, NK_EDIT_SIMPLE, registers[i], sizeof(registers[i]), nk_filter_decimal);
-			//printf("%d%d%d\n",ctx->style.edit.normal.data.color.r,ctx->style.edit.normal.data.color.g,ctx->style.edit.normal.data.color.b);
 			clearRegisterStyle(ctx);
     	}
     	nk_end(ctx);
     }
-
-    /* End Nuklear GUI */
     nkc_render((struct nkc*)nkcPointer, nk_rgb(60,60,60) );
 }
 
@@ -137,7 +136,9 @@ int main(){
 	#endif
 
     struct nkc nkcx;
-    if( nkc_init(&nkcx, "MIPS Simulator", 1280, 720, NKC_WIN_NORMAL) )
+    screenWidth = 1280;
+    screenHeight = 720;
+    if( nkc_init(&nkcx, "MIPS Simulator", screenWidth,screenHeight, NKC_WIN_NORMAL) )
         nkc_set_main_loop(&nkcx, mainLoop,(void*)&nkcx);
     else
         printf("Can't init NKC\n");
