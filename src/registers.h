@@ -32,6 +32,7 @@ char registerNames [32][6] = {
 		"$fp",
 		"$ra"
 };
+
 char registerTips [32][116] = {
 		"register hard-coded to the value 0; unchangeable",
 		"register reserved for pseudo-instructions",
