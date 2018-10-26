@@ -16,6 +16,9 @@ compile with gdi:
 or run make (if you have minGW installed with make somewhere in your system path):  
 ```make```
 
+## steps to compile on Mac OSX  
+TODO: get access to a mac and fill me out  
+
 ## To develop in Eclipse on Windows  
 -Navigate to Project Properties >> C/C++ Build  
 -set Builder type to External builder  
@@ -25,10 +28,15 @@ or run make (if you have minGW installed with make somewhere in your system path
 ```OSFLAG :=
 ifeq ($(OS),Windows_NT)
     detected_OS := Windows
-	CFLAGS += -lgdiplus -lshlwapi -lcomctl32 -mwindows
+    CFLAGS += -lgdiplus -lshlwapi -lcomctl32 -mwindows
 else
-    detected_OS := $(shell uname)  # same as "uname -s"
-	CFLAGS += `sdl2-config --cflags --libs` -lGL `pkg-config --cflags gtk+-3.0` `pkg-config --libs gtk+-3.0`
+    detected_OS := $(shell uname -s)
+    ifeq ($(detected_OS),Linux)
+		CFLAGS += `sdl2-config --cflags --libs` -lGL `pkg-config --cflags gtk+-3.0` `pkg-config --libs gtk+-3.0`
+    endif
+	ifeq ($(detected_OS),Darwin)
+		CFLAGS += `sdl2-config --cflags --libs` -lGL -framework AppKit
+    endif
 endif
 
 src/MIPS-sandbox.c: 
