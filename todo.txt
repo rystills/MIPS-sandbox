@@ -1,4 +1,3 @@
--fix tooltips showing when mousing over menubar menu
 -spacebar, arrow keys, delete key do not fire multiple times when held down (other keys do)
 -cannot highlight text in the register boxes or navigate with ctrl
 -maximized Windows performance and general Ubuntu performance are rather poor; profiling should be done to resolve this
