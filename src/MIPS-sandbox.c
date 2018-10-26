@@ -5,6 +5,15 @@
 #ifdef _WIN32
 #define NOC_FILE_DIALOG_WIN32
 #endif
+#ifdef __APPLE__ 
+#define NOC_FILE_DIALOG_OSX
+#endif
+#ifdef __linux__
+#define NOC_FILE_DIALOG_GTK
+#endif
+#ifdef __FreeBSD__
+#define NOC_FILE_DIALOG_GTK 
+#endif
 #include "../noc/noc_file_dialog.h"
 
 #include <stdio.h>

@@ -3,8 +3,10 @@ install sdl2:
 ```sudo apt-get install libsdl2-dev```  
 install glew:  
 ```sudo apt-get install libglew-dev```  
+install GTK3:
+```sudo apt-get install libgtk-3-dev```  
 compile with sdl2 and lGL:  
-```gcc -Wall  MIPS-sandbox.c -o3 -o main.out -lm -I. `sdl2-config --cflags --libs` -lGL```  
+```gcc -Wall  MIPS-sandbox.c -o3 -o main.out -lm -I. `sdl2-config --cflags --libs` -lGL `pkg-config --cflags gtk+-3.0` `pkg-config --libs gtk+-3.0` ```  
 or run make:  
 ```make```
 
@@ -26,7 +28,7 @@ ifeq ($(OS),Windows_NT)
 	CFLAGS += -lgdiplus -lshlwapi -lcomctl32 -mwindows
 else
     detected_OS := $(shell uname)  # same as "uname -s"
-	CFLAGS += `sdl2-config --cflags --libs` -lGL
+	CFLAGS += `sdl2-config --cflags --libs` -lGL `pkg-config --cflags gtk+-3.0` `pkg-config --libs gtk+-3.0`
 endif
 
 src/MIPS-sandbox.c: 
