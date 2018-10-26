@@ -121,6 +121,7 @@ void mainLoop(void* nkcPointer){
     //reusable vars
     struct nk_rect bounds;
     struct nk_rect menubarBounds;
+    struct nk_rect menubarOpenMenuBounds = menubarBounds;
     const struct nk_input *in = &ctx->input;
 
     //poll events
@@ -133,11 +134,10 @@ void mainLoop(void* nkcPointer){
     if (nk_begin(ctx, "mainMenu", nk_rect(0,0,screenWidth,34), window_flags)) {
         menubarBounds = nk_window_get_bounds(ctx);
     	nk_menubar_begin(ctx);
-        if (nk_input_is_mouse_hovering_rect(in, bounds)) {
-        }
 		nk_layout_row_begin(ctx, NK_STATIC, 25, 5);
 		nk_layout_row_push(ctx, 45);
-		if (nk_menu_begin_label(ctx, "File", NK_TEXT_LEFT, nk_vec2(120, 300))) {
+		if (nk_menu_begin_label(ctx, "File", NK_TEXT_LEFT, nk_vec2(120, 95))) {
+			menubarOpenMenuBounds = nk_window_get_bounds(ctx);
 			nk_layout_row_dynamic(ctx, 25, 1);
 			if (nk_menu_item_label(ctx, "Save", NK_TEXT_LEFT))
 				; //TODO: save file
@@ -149,7 +149,8 @@ void mainLoop(void* nkcPointer){
 		}
 
 		nk_layout_row_push(ctx, 45);
-		if (nk_menu_begin_label(ctx, "Options", NK_TEXT_LEFT, nk_vec2(120, 300))) {
+		if (nk_menu_begin_label(ctx, "Options", NK_TEXT_LEFT, nk_vec2(120, 35))) {
+			menubarOpenMenuBounds = nk_window_get_bounds(ctx);
 			nk_layout_row_dynamic(ctx, 25, 1);
 			nk_checkbox_label(ctx, "some tickbox", &check);
 			nk_menu_end(ctx);
@@ -168,7 +169,7 @@ void mainLoop(void* nkcPointer){
 			checkSetInvalidRegisterContents(i,ctx);
 			//tooltip
 			bounds = nk_widget_bounds(ctx);
-			if (nk_input_is_mouse_hovering_rect(in, bounds) && !nk_input_is_mouse_hovering_rect(in, menubarBounds)) {
+			if (nk_input_is_mouse_hovering_rect(in, bounds) && !(nk_input_is_mouse_hovering_rect(in,menubarOpenMenuBounds) || nk_input_is_mouse_hovering_rect(in, menubarBounds))) {
 				nk_tooltip(ctx,registerTips[i]);
 			}
 			nk_label(ctx, registerNames[i], NK_TEXT_LEFT);
