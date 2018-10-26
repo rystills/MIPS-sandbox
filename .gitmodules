@@ -4,3 +4,6 @@
 [submodule "noc"]
 	path = noc
 	url = https://github.com/rystills/noc
+[submodule "nuklear_cross"]
+	path = nuklear_cross
+	url = https://github.com/rystills/nuklear_cross
