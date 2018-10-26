@@ -47,7 +47,7 @@ char registerNames [NUMREGISTERS][6] = {
 		"$fp",
 		"$ra"
 };
-char registerTips [NUMREGISTERS][105] = {
+char registerTips [NUMREGISTERS][116] = {
 		"register hard-coded to the value 0; unchangeable",
 		"register reserved for pseudo-instructions",
 		"return Value 0 from function call",
@@ -76,7 +76,7 @@ char registerTips [NUMREGISTERS][105] = {
 		"Temporary register 9; not preserved by subprograms",
 		"register 0 reserved for Kernel.",
 		"register 1 reserved for Kernel.",
-		"Global area Pointer; points to the middle of the 64k memory block. Useful for creating global variables",
+		"Global area Pointer; points to the middle of the 64k memory block. Useful for creating/referencing global variables",
 		"Stack Pointer; points to the top of the stack",
 		"Frame Pointer; points to the active frame of the stack",
 		"Return Address; stores the address of the next instruction to return to. Useful upon function termination"
@@ -120,6 +120,7 @@ void mainLoop(void* nkcPointer){
 
     //reusable vars
     struct nk_rect bounds;
+    struct nk_rect menubarBounds;
     const struct nk_input *in = &ctx->input;
 
     //poll events
@@ -130,7 +131,10 @@ void mainLoop(void* nkcPointer){
     //menubar window
     int window_flags = 0;
     if (nk_begin(ctx, "mainMenu", nk_rect(0,0,screenWidth,34), window_flags)) {
-        nk_menubar_begin(ctx);
+        menubarBounds = nk_window_get_bounds(ctx);
+    	nk_menubar_begin(ctx);
+        if (nk_input_is_mouse_hovering_rect(in, bounds)) {
+        }
 		nk_layout_row_begin(ctx, NK_STATIC, 25, 5);
 		nk_layout_row_push(ctx, 45);
 		if (nk_menu_begin_label(ctx, "File", NK_TEXT_LEFT, nk_vec2(120, 300))) {
@@ -164,7 +168,7 @@ void mainLoop(void* nkcPointer){
 			checkSetInvalidRegisterContents(i,ctx);
 			//tooltip
 			bounds = nk_widget_bounds(ctx);
-			if (nk_input_is_mouse_hovering_rect(in, bounds)) {
+			if (nk_input_is_mouse_hovering_rect(in, bounds) && !nk_input_is_mouse_hovering_rect(in, menubarBounds)) {
 				nk_tooltip(ctx,registerTips[i]);
 			}
 			nk_label(ctx, registerNames[i], NK_TEXT_LEFT);
