@@ -65,5 +65,5 @@ char registerTips [32][116] = {
 		"Global area Pointer; points to the middle of the 64k memory block. Useful for creating/referencing global variables",
 		"Stack Pointer; points to the top of the stack",
 		"Frame Pointer; points to the active frame of the stack",
-		"Return Address; stores the address of the next instruction to return to. Useful upon function termination"
+		"Return Address; stores the address of the next instruction to return to. Typically used on function termination"
 };

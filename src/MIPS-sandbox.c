@@ -1,5 +1,12 @@
 #define NKC_IMPLEMENTATION
 #include "../nuklear_cross/nuklear_cross.h"
+
+#define NOC_FILE_DIALOG_IMPLEMENTATION
+#ifdef _WIN32
+#define NOC_FILE_DIALOG_WIN32
+#endif
+#include "../noc/noc_file_dialog.h"
+
 #include <stdio.h>
 //inttypes allows us to guarantee n-bit ints
 #include <inttypes.h>
@@ -76,8 +83,10 @@ void mainLoop(void* nkcPointer){
 				; //TODO: save file
 			if (nk_menu_item_label(ctx, "Save As", NK_TEXT_LEFT))
 				; //TODO: save file select name
-			if (nk_menu_item_label(ctx, "Load", NK_TEXT_LEFT))
-				; //TODO: load file
+			if (nk_menu_item_label(ctx, "Load", NK_TEXT_LEFT)) {
+				const char* ret = noc_file_dialog_open(NOC_FILE_DIALOG_OPEN,
+				                               "png\0*.png\0jpg\0*.jpg;*.jpeg\0", NULL, NULL);
+			}
 			nk_menu_end(ctx);
 		}
 

@@ -1,7 +1,7 @@
 OSFLAG :=
 ifeq ($(OS),Windows_NT)
     detected_OS := Windows
-	CFLAGS += -lgdiplus -lshlwapi
+	CFLAGS += -lgdiplus -lshlwapi -lcomctl32 -mwindows
 else
     detected_OS := $(shell uname)  # same as "uname -s"
 	CFLAGS += `sdl2-config --cflags --libs` -lGL

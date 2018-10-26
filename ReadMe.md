@@ -10,7 +10,7 @@ or run make:
 
 ## steps to compile on windows  
 compile with gdi:  
-```gcc -Wall src/MIPS-sandbox.c -o3 -o main.exe -lm -I. -lgdiplus -lshlwapi```  
+```gcc -Wall src/MIPS-sandbox.c -o3 -o main.exe -lm -I. -lgdiplus -lshlwapi -lcomctl32 -mwindows```  
 or run make (if you have minGW installed with make somewhere in your system path):  
 ```make```
 
@@ -23,7 +23,7 @@ or run make (if you have minGW installed with make somewhere in your system path
 ```OSFLAG :=
 ifeq ($(OS),Windows_NT)
     detected_OS := Windows
-	CFLAGS += -lgdiplus -lshlwapi
+	CFLAGS += -lgdiplus -lshlwapi -lcomctl32 -mwindows
 else
     detected_OS := $(shell uname)  # same as "uname -s"
 	CFLAGS += `sdl2-config --cflags --libs` -lGL
