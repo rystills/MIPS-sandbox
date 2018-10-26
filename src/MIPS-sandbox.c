@@ -93,8 +93,7 @@ void mainLoop(void* nkcPointer){
 			if (nk_menu_item_label(ctx, "Save As", NK_TEXT_LEFT))
 				; //TODO: save file select name
 			if (nk_menu_item_label(ctx, "Load", NK_TEXT_LEFT)) {
-				const char* ret = noc_file_dialog_open(NOC_FILE_DIALOG_OPEN,
-				                               "png\0*.png\0jpg\0*.jpg;*.jpeg\0", NULL, NULL);
+				const char* ret = noc_file_dialog_open(NOC_FILE_DIALOG_OPEN,"asm\0*.s;*.asm\0", NULL, NULL);
 			}
 			nk_menu_end(ctx);
 		}
