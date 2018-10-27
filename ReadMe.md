@@ -3,7 +3,7 @@ install sdl2:
 ```sudo apt-get install libsdl2-dev```  
 install glew:  
 ```sudo apt-get install libglew-dev```  
-install GTK3:
+install GTK3:  
 ```sudo apt-get install libgtk-3-dev```  
 compile with sdl2 and lGL:  
 ```gcc -Wall  MIPS-sandbox.c -o3 -o main.out -lm -I. `sdl2-config --cflags --libs` -lGL `pkg-config --cflags gtk+-3.0` `pkg-config --libs gtk+-3.0` ```  
