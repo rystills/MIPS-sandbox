@@ -89,13 +89,11 @@ void exitError(char* msg) {
  */
 bool loadFileData() {
 	const char* ret = noc_file_dialog_open(NOC_FILE_DIALOG_OPEN,"asm\0*.s;*.asm\0", NULL, NULL);
-	printf("%s\n",ret);
 	if (ret == NULL) {
 		return false;
 	}
 	FILE *inFile = fopen(ret,"rb");
 	if (!inFile) {
-		fclose(inFile);
 		exitError("Error: unable to open input file");
 	}
 	long fileLen = getFileLength(inFile);
@@ -104,11 +102,11 @@ bool loadFileData() {
 		fclose(inFile);
 		exitError("Error: unable to allocate memory for file buffer");
 	}
-	size_t r = fread(fileData, fileLen, 1, inFile);
+	size_t readVal = fread(fileData, fileLen, 1, inFile);
 	fileData[fileLen] = '\0';
 	printf("%s\n",fileData);
 	fclose(inFile);
-	if(r != 1) {
+	if(readVal != 1) {
 		  free(fileData);
 		  exitError("Error: unable to read all data from input file");
 	}
