@@ -32,6 +32,8 @@ static int check = nk_false;
 //signed 32 bit max val = 2,147,483,647, or 10 digits; need 3 additional digits for optional - sign and \0
 char registers [NUMREGISTERS][REGISTERLEN];
 
+char* fileData = NULL;
+
 /**
  * check if the specified register contents are invalid; if so, set register style to force red highlight
  * @param regNum: the register number to check
@@ -58,6 +60,59 @@ void clearRegisterStyle(struct nk_context *ctx) {
 	ctx->style.edit.normal.data.color = nk_rgb(38,38,38);
 	ctx->style.edit.active.data.color = nk_rgb(38,38,38);
 	ctx->style.edit.hover.data.color = nk_rgb(38,38,38);
+}
+
+/**
+ * determine the number of characters present in the specified file
+ * @param file: a file pointer returned by fopen
+ * @returns: the number of characters in file
+ */
+long getFileLength(FILE *file) {
+    fseek(file, 0L, SEEK_END);
+    long length = ftell(file);
+    rewind(file);
+    return length;
+}
+
+/**
+ * display an error message and terminate the application
+ * @param msg: the message to display
+ */
+void exitError(char* msg) {
+	fputs(msg,stderr);
+	exit(1);
+}
+
+/**
+ * open a file select dialogue and load the contents of the chosen file into fileData
+ * @returns: whether a file was successfully chosen and read (true) or not (false)
+ */
+bool loadFileData() {
+	const char* ret = noc_file_dialog_open(NOC_FILE_DIALOG_OPEN,"asm\0*.s;*.asm\0", NULL, NULL);
+	printf("%s\n",ret);
+	if (ret == NULL) {
+		return false;
+	}
+	FILE *inFile = fopen(ret,"rb");
+	if (!inFile) {
+		fclose(inFile);
+		exitError("Error: unable to open input file");
+	}
+	long fileLen = getFileLength(inFile);
+	fileData = realloc(fileData,fileLen+1);
+	if (!fileData) {
+		fclose(inFile);
+		exitError("Error: unable to allocate memory for file buffer");
+	}
+	size_t r = fread(fileData, fileLen, 1, inFile);
+	fileData[fileLen] = '\0';
+	printf("%s\n",fileData);
+	fclose(inFile);
+	if(r != 1) {
+		  free(fileData);
+		  exitError("Error: unable to read all data from input file");
+	}
+	return true;
 }
 
 /**
@@ -93,7 +148,7 @@ void mainLoop(void* nkcPointer){
 			if (nk_menu_item_label(ctx, "Save As", NK_TEXT_LEFT))
 				; //TODO: save file select name
 			if (nk_menu_item_label(ctx, "Load", NK_TEXT_LEFT)) {
-				const char* ret = noc_file_dialog_open(NOC_FILE_DIALOG_OPEN,"asm\0*.s;*.asm\0", NULL, NULL);
+				loadFileData();
 			}
 			nk_menu_end(ctx);
 		}
