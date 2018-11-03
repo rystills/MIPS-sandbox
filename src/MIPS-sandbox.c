@@ -21,6 +21,7 @@
 #include <inttypes.h>
 #include <stdbool.h>
 #include "registers.h"
+#include "linkedList.h"
 
 #define NUMREGISTERS 32
 #define REGISTERLEN 12

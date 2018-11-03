@@ -1,3 +1,6 @@
+#ifndef _REGISTER_GUARD
+#define _REGISTER_GUARD
+
 char registerNames [32][6] = {
 		"$zero",
 		"$at",
@@ -67,3 +70,4 @@ char registerTips [32][116] = {
 		"Frame Pointer; points to the active frame of the stack",
 		"Return Address; stores the address of the next instruction to return to. Typically used on function termination"
 };
+#endif
