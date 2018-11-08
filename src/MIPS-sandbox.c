@@ -1,4 +1,5 @@
 #define NKC_IMPLEMENTATION
+#define NKC_DISABLE_DEFAULT_FONT
 #include "../nuklear_cross/nuklear_cross.h"
 
 #define NOC_FILE_DIALOG_IMPLEMENTATION
@@ -166,7 +167,7 @@ void mainLoop(void* nkcPointer){
     window_flags = NK_WINDOW_BORDER | NK_WINDOW_BACKGROUND;
     if (nk_begin(ctx, "registers", nk_rect(0,34,220,screenHeight - 34), window_flags)) {
     	nk_layout_row_dynamic(ctx, 25, 2);
-    	nk_label(ctx, "Integer Register", NK_TEXT_LEFT);
+    	nk_label(ctx, "Int Register", NK_TEXT_LEFT);
     	nk_label(ctx, "Value", NK_TEXT_LEFT);
     	for (int i = 0; i < NUMREGISTERS; ++i) {
 			nk_layout_row_dynamic(ctx, 25, 2);
@@ -198,8 +199,12 @@ int main(){
     struct nkc nkcx;
     screenWidth = 1280;
     screenHeight = 720;
-    if( nkc_init(&nkcx, "MIPS Simulator", screenWidth,screenHeight, NKC_WIN_NORMAL) )
-        nkc_set_main_loop(&nkcx, mainLoop,(void*)&nkcx);
+    if( nkc_init(&nkcx, "MIPS Simulator", screenWidth,screenHeight, NKC_WIN_NORMAL) ) {
+    	//load font
+    	struct nk_user_font *font = nkc_load_font_file(&nkcx, "fonts/FiraCode-Regular.ttf", 14.0f,0);
+    	nkcx.ctx->style.font = font;
+    	nkc_set_main_loop(&nkcx, mainLoop,(void*)&nkcx);
+    }
     else
         printf("Can't init NKC\n");
     nkc_shutdown(&nkcx);
