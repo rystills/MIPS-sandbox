@@ -7,14 +7,16 @@ install GTK3:
 ```sudo apt-get install libgtk-3-dev```  
 compile with sdl2 and lGL:  
 ```gcc -Wall  MIPS-sandbox.c -o3 -o main.out -lm -I. `sdl2-config --cflags --libs` -lGL `pkg-config --cflags gtk+-3.0` `pkg-config --libs gtk+-3.0` ```  
-or run make:  
-```make```
+alternatively, run make:  
+```make```  
+finally, copy FiraCode/distr/ttf/FiraCode-Regular.ttf to the build folder  
 
 ## steps to compile on windows  
 compile with gdi:  
 ```gcc -Wall src/MIPS-sandbox.c -o3 -o main.exe -lm -I. -lgdiplus -lshlwapi -lcomctl32 -mwindows```  
-or run make (if you have minGW installed with make somewhere in your system path):  
-```make```
+alternatively, run make (if you have minGW installed with make somewhere in your system path):  
+```make```  
+finally, copy FiraCode/distr/ttf/FiraCode-Regular.ttf to the build folder  
 
 ## steps to compile on Mac OSX  
 TODO: get access to a mac and fill me out  
@@ -42,5 +44,5 @@ endif
 src/MIPS-sandbox.c: 
 
 all: src/MIPS-sandbox.c
-	gcc -Wall ../src/MIPS-sandbox.c -o3 -o MIPS-sandbox.exe -lm -I. $(CFLAGS)
+	gcc -Wall ../src/MIPS-sandbox.c -O3 -o MIPS-sandbox.exe -lm -I. $(CFLAGS)
 ```  

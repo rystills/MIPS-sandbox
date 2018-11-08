@@ -13,4 +13,4 @@ else
 endif
 
 make: src/MIPS-sandbox.c
-	gcc -Wall src/MIPS-sandbox.c -o3 -o main.exe -lm -I. $(CFLAGS)
+	gcc -Wall src/MIPS-sandbox.c -O3 -o main.exe -lm -I. $(CFLAGS)
