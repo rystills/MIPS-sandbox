@@ -4,3 +4,4 @@
 -supply your own font to ensure consistency across platforms
 -store preferences (window dims, fullscreen?) in an external file
 -threaded simulation with shared memory for outputting to the GUI without affecting performance
+-custom font is blurry on Ubuntu, but not default font
