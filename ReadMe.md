@@ -44,6 +44,6 @@ endif
 src/MIPS-sandbox.c: 
 
 all: src/MIPS-sandbox.c
-	copy ..\nuklear\extra_font\ProggyClean.ttf || cp ..\nuklear\extra_font\ProggyClean.ttf .
+	copy ..\nuklear\extra_font\ProggyClean.ttf || cp ../nuklear/extra_font/ProggyClean.ttf .
     gcc -Wall ../src/MIPS-sandbox.c -O3 -o MIPS-sandbox.exe -lm -I. $(CFLAGS)
 ```  
