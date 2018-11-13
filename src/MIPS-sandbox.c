@@ -1,4 +1,6 @@
 #define NKC_IMPLEMENTATION
+#define NK_INCLUDE_FONT_BAKING
+#define NK_INCLUDE_DEFAULT_FONT
 //#define NKC_DISABLE_DEFAULT_FONT
 #include "../nuklear_cross/nuklear_cross.h"
 
@@ -201,8 +203,9 @@ int main(){
     screenHeight = 720;
     if( nkc_init(&nkcx, "MIPS Simulator", screenWidth,screenHeight, NKC_WIN_NORMAL) ) {
     	//load font
-    	struct nk_user_font *font = nkc_load_font_file(&nkcx, "FiraCode-Regular.ttf", 14,0);
-    	nkcx.ctx->style.font = font;
+    	//struct nk_user_font *font = nkc_load_font_file(&nkcx, "FiraCode-Regular.ttf", 14,0);
+    	//nkcx.ctx->style.font = font;
+    	//nkc_style_set_font(&nkcx,font);
     	nkc_set_main_loop(&nkcx, mainLoop,(void*)&nkcx);
     }
     else

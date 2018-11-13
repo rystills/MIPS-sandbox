@@ -14,4 +14,5 @@ endif
 
 make: src/MIPS-sandbox.c
 	copy FiraCode\distr\ttf\FiraCode-Regular.ttf || cp FiraCode/distr/ttf/FiraCode-Regular.ttf .
-	gcc -Wall src/MIPS-sandbox.c -O3 -o main.exe -lm -I. $(CFLAGS)
+	gcc -Wall src/MIPS-sandbox.c -o main.exe -lm -I. $(CFLAGS)
+	#gcc -Wall src/MIPS-sandbox.c -O3 -o main.exe -lm -I. $(CFLAGS)
