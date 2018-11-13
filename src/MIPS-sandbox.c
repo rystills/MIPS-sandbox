@@ -203,7 +203,7 @@ int main(){
     screenHeight = 720;
     if( nkc_init(&nkcx, "MIPS Simulator", screenWidth,screenHeight, NKC_WIN_NORMAL) ) {
     	//load font
-    	//struct nk_user_font *font = nkc_load_font_file(&nkcx, "FiraCode-Regular.ttf", 14,0);
+    	struct nk_user_font *font = nkc_load_font_file(&nkcx, "ProggyClean.ttf", 13,0);
     	//nkcx.ctx->style.font = font;
     	//nkc_style_set_font(&nkcx,font);
     	nkc_set_main_loop(&nkcx, mainLoop,(void*)&nkcx);
