@@ -6,7 +6,10 @@
 
 #define NOC_FILE_DIALOG_IMPLEMENTATION
 #ifdef _WIN32
+#define fontSize 19
 #define NOC_FILE_DIALOG_WIN32
+#else
+#define fontSize 13
 #endif
 #ifdef __APPLE__ 
 #define NOC_FILE_DIALOG_OSX
@@ -203,9 +206,8 @@ int main(){
     screenHeight = 720;
     if( nkc_init(&nkcx, "MIPS Simulator", screenWidth,screenHeight, NKC_WIN_NORMAL) ) {
     	//load font
-    	struct nk_user_font *font = nkc_load_font_file(&nkcx, "ProggyClean.ttf", 13,0);
-    	//nkcx.ctx->style.font = font;
-    	//nkc_style_set_font(&nkcx,font);
+    	struct nk_user_font *font = nkc_load_font_file(&nkcx, "ProggyClean.ttf", fontSize,0);
+    	nkcx.ctx->style.font = font;
     	nkc_set_main_loop(&nkcx, mainLoop,(void*)&nkcx);
     }
     else

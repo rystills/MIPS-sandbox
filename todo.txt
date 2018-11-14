@@ -1,7 +1,6 @@
 -spacebar, arrow keys, delete key do not fire multiple times when held down (other keys do)
 -cannot highlight text in the register boxes or navigate with ctrl
 -maximized Windows performance and general Ubuntu performance are rather poor; profiling should be done to resolve this
--supply your own font to ensure consistency across platforms
 -store preferences (window dims, fullscreen?) in an external file
 -threaded simulation with shared memory for outputting to the GUI without affecting performance
--custom font is blurry on Ubuntu, but not default font
+-determine why windows ProggyClean size 19 is equal to Ubuntu ProggyClean size 13
