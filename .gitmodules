@@ -7,6 +7,3 @@
 [submodule "nuklear_cross"]
 	path = nuklear_cross
 	url = https://github.com/rystills/nuklear_cross
-[submodule "FiraCode"]
-	path = FiraCode
-	url = https://github.com/rystills/FiraCode.git
