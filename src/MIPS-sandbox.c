@@ -39,7 +39,6 @@ static int check = nk_false;
 //signed 32 bit max val = 2,147,483,647, or 10 digits; need 3 additional digits for optional - sign and \0
 char registers[NUMREGISTERS][REGISTERLEN];
 
-char* fileData = NULL;
 char codeText[999];
 
 /**
@@ -105,7 +104,7 @@ bool loadFileData() {
 		exitError("Error: unable to open input file");
 	}
 	long fileLen = getFileLength(inFile);
-	fileData = realloc(fileData,fileLen+1);
+	char* fileData = malloc(fileLen+1);
 	if (!fileData) {
 		fclose(inFile);
 		exitError("Error: unable to allocate memory for file buffer");
@@ -118,6 +117,8 @@ bool loadFileData() {
 		  free(fileData);
 		  exitError("Error: unable to read all data from input file");
 	}
+	strcpy(codeText,fileData);
+	free(fileData);
 	return true;
 }
 
@@ -197,6 +198,7 @@ void mainLoop(void* nkcPointer){
     //code edit window
     window_flags = NK_WINDOW_BORDER;
     if (nk_begin(ctx, "code", nk_rect(220,34,screenWidth-220,screenHeight-34), window_flags)) {
+    	//TODO: 22 was detected as the necessary number of extra pixels to remove the scrollbar on windows; test on Ubuntu
     	nk_layout_row_dynamic(ctx, screenHeight-34-22, 1);
     	nk_edit_string_zero_terminated(ctx, NK_EDIT_BOX, codeText, sizeof(codeText), nk_filter_default);
     	//nk_edit_string(ctx, NK_EDIT_SIMPLE, codeText, sizeof(codeText), nk_filter_default);

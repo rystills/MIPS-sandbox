@@ -1,5 +1,8 @@
 issues:
+-windows line endings are not handled properly
 -spacebar, arrow keys, delete key do not fire multiple times when held down (other keys do)
+-ctrl brings you to the beginning of a textfield, rather than to the beginning of the current line
+-up and down arrow keys cannot be used to navigate between lines in a multi-line textfield
 -maximized Windows performance and general Ubuntu performance are rather poor; profiling should be done to resolve this
 -determine why windows ProggyClean size 19 is equal to Ubuntu ProggyClean size 13
 
