@@ -37,9 +37,10 @@ extern int screenHeight;
 
 static int check = nk_false;
 //signed 32 bit max val = 2,147,483,647, or 10 digits; need 3 additional digits for optional - sign and \0
-char registers [NUMREGISTERS][REGISTERLEN];
+char registers[NUMREGISTERS][REGISTERLEN];
 
 char* fileData = NULL;
+char codeText[999];
 
 /**
  * check if the specified register contents are invalid; if so, set register style to force red highlight
@@ -183,7 +184,8 @@ void mainLoop(void* nkcPointer){
 				nk_tooltip(ctx,registerTips[i]);
 			}
 			nk_label(ctx, registerNames[i], NK_TEXT_LEFT);
-			nk_edit_string_zero_terminated(ctx, NK_EDIT_SIMPLE, registers[i], sizeof(registers[i]), nk_filter_decimal);
+			//for edit modes, see https://github.com/vurtun/nuklear/blob/181cfd86c47ae83eceabaf4e640587b844e613b6/src/nuklear.h#L3132
+			nk_edit_string_zero_terminated(ctx, NK_EDIT_FIELD, registers[i], sizeof(registers[i]), nk_filter_decimal);
 			clearRegisterStyle(ctx);
 
     	}
@@ -191,7 +193,17 @@ void mainLoop(void* nkcPointer){
     	registers[0][1] = '\0';
     	nk_end(ctx);
     }
-    nkc_render((struct nkc*)nkcPointer, nk_rgb(60,60,60) );
+
+    //code edit window
+    window_flags = NK_WINDOW_BORDER;
+    if (nk_begin(ctx, "code", nk_rect(220,34,screenWidth-220,screenHeight-34), window_flags)) {
+    	nk_layout_row_dynamic(ctx, screenHeight-34-22, 1);
+    	nk_edit_string_zero_terminated(ctx, NK_EDIT_BOX, codeText, sizeof(codeText), nk_filter_default);
+    	//nk_edit_string(ctx, NK_EDIT_SIMPLE, codeText, sizeof(codeText), nk_filter_default);
+    	nk_end(ctx);
+    }
+
+	nkc_render((struct nkc*)nkcPointer, nk_rgb(60,60,60) );
 }
 
 int main(){
