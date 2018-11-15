@@ -1,11 +1,16 @@
 issues:
+-spacebar, arrow keys, delete keys can fire continuously on Windows, but may not fire continuously on Ubuntu (untested - check and update me)
 -windows line endings are not handled properly
--spacebar, arrow keys, delete key do not fire multiple times when held down (other keys do)
 -ctrl brings you to the beginning of a textfield, rather than to the beginning of the current line
--up and down arrow keys cannot be used to navigate between lines in a multi-line textfield
 -maximized Windows performance and general Ubuntu performance are rather poor; profiling should be done to resolve this
 -determine why windows ProggyClean size 19 is equal to Ubuntu ProggyClean size 13
 
 feature ideas:
 -store preferences (window dims, fullscreen?) in an external file
 -threaded simulation with shared memory for outputting to the GUI without affecting performance
+-hotkeys
+-copy/paste (see nuklear.h line 22794)
+-undo/redo (see nuklear.h line 4160)
+-select all (need to add NK_KEY_TEXT_SELECT_ALL to all 11 driver files in nuklear+)
+-line numbers in code edit window
+-make should create bin folder
