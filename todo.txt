@@ -11,6 +11,5 @@ feature ideas:
 -hotkeys
 -copy/paste (see nuklear.h line 22794)
 -undo/redo (see nuklear.h line 4160)
--select all (need to add NK_KEY_TEXT_SELECT_ALL to all 11 driver files in nuklear+)
 -line numbers in code edit window
 -make should create bin folder
