@@ -1,15 +1,19 @@
 issues:
--spacebar, arrow keys, delete keys can fire continuously on Windows, but may not fire continuously on Ubuntu (untested - check and update me)
--windows line endings are not handled properly
--ctrl brings you to the beginning of a textfield, rather than to the beginning of the current line
--maximized Windows performance and general Ubuntu performance are rather poor; profiling should be done to resolve this
--determine why windows ProggyClean size 19 is equal to Ubuntu ProggyClean size 13
+-windows line endings are not handled properly (remove \r on file load, and add it back in when saving if on windows)
+-up arrow on the first line does nothing, and up arrow on the very last character brings you to the start of that line, rather than to the prev line
+-scrollbar always scrolls register window
 
-feature ideas:
--store preferences (window dims, fullscreen?) in an external file
--threaded simulation with shared memory for outputting to the GUI without affecting performance
+potential issues to check:
+-spacebar, arrow keys, delete keys can fire continuously on Windows, but may not fire continuously on Ubuntu (untested - check and update me)
+-determine why windows ProggyClean size 19 is equal to Ubuntu ProggyClean size 13
+-maximized window on windows is a bit laggy, alt + tabbing and alt + f4 on Ubuntu are very laggy
+
+desired features:
+-make should create bin folder
 -hotkeys
 -copy/paste (see nuklear.h line 22794)
 -undo/redo (see nuklear.h line 4160)
+-enter newline should also tab to the current line indentation level
 -line numbers in code edit window
--make should create bin folder
+-store preferences (window dims, fullscreen?) in an external file
+-threaded simulation with shared memory for outputting to the GUI without affecting performance

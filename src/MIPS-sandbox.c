@@ -201,7 +201,6 @@ void mainLoop(void* nkcPointer){
     	//TODO: 22 was detected as the necessary number of extra pixels to remove the scrollbar on windows; test on Ubuntu
     	nk_layout_row_dynamic(ctx, screenHeight-34-22, 1);
     	nk_edit_string_zero_terminated(ctx, NK_EDIT_BOX, codeText, sizeof(codeText), nk_filter_default);
-    	//nk_edit_string(ctx, NK_EDIT_SIMPLE, codeText, sizeof(codeText), nk_filter_default);
     	nk_end(ctx);
     }
 
