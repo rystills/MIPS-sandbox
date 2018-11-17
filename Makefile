@@ -13,6 +13,7 @@ else
 endif
 
 make: src/MIPS-sandbox.c
-	copy nuklear\extra_font\ProggyClean.ttf || cp nuklear/extra_font/ProggyClean.ttf .
-	gcc -Wall src/MIPS-sandbox.c -o main.exe -lm -I. $(CFLAGS)
-	#gcc -Wall src/MIPS-sandbox.c -O3 -o main.exe -lm -I. $(CFLAGS)
+	mkdir bin || echo
+	copy nuklear\extra_font\ProggyClean.ttf bin || cp nuklear/extra_font/ProggyClean.ttf bin
+	gcc -Wall src/MIPS-sandbox.c -o bin/main.exe -lm -I. $(CFLAGS)
+#gcc -Wall src/MIPS-sandbox.c -O3 -o main.exe -lm -I. $(CFLAGS)
