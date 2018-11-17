@@ -11,14 +11,14 @@
 #else
 #define fontSize 13
 #endif
-#ifdef __APPLE__ 
+#ifdef __APPLE__
 #define NOC_FILE_DIALOG_OSX
 #endif
 #ifdef __linux__
 #define NOC_FILE_DIALOG_GTK
 #endif
 #ifdef __FreeBSD__
-#define NOC_FILE_DIALOG_GTK 
+#define NOC_FILE_DIALOG_GTK
 #endif
 #include "../noc/noc_file_dialog.h"
 
@@ -117,7 +117,17 @@ bool loadFileData() {
 		  free(fileData);
 		  exitError("Error: unable to read all data from input file");
 	}
-	strcpy(codeText,fileData);
+	//copy file data into code text buffer, stripping windows /r's as we go
+	memset(codeText,'\0',sizeof(codeText));
+	int charsCopied = 0;
+	const char delim[2] = "\r";
+	char *token = strtok(fileData, delim);
+	while(token != NULL) {
+		strcpy(codeText+charsCopied,token);
+		charsCopied += strlen(token);
+		token = strtok(NULL, delim);
+	}
+
 	free(fileData);
 	return true;
 }
