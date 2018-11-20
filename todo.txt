@@ -7,6 +7,7 @@ potential issues to check:
 -spacebar, arrow keys, delete keys can fire continuously on Windows, but may not fire continuously on Ubuntu (untested - check and update me)
 -determine why windows ProggyClean size 19 is equal to Ubuntu ProggyClean size 13
 -maximized window on windows is a bit laggy, alt + tabbing and alt + f4 on Ubuntu are very laggy
+-22 was detected as the necessary number of extra pixels to remove the scrollbar on windows; test on Ubuntu
 
 desired features:
 -hotkeys
@@ -16,3 +17,4 @@ desired features:
 -line numbers in code edit window
 -store preferences (window dims, fullscreen?) in an external file
 -threaded simulation with shared memory for outputting to the GUI without affecting performance
+-replace exitError calls with warning messages and continuation when possible

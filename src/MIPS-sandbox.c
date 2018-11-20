@@ -134,12 +134,20 @@ bool loadFileData() {
 	return true;
 }
 
+bool saveFileData();
+
 /**
  * selects a file and saves the contents of the code window to it
  * @returns: whether a file was successfully chosen and written to (true) or not (false)
  */
 bool saveFileDataAs() {
-	return false;
+	const char* ret = noc_file_dialog_open(NOC_FILE_DIALOG_SAVE,"asm\0*.s;*.asm\0", NULL, NULL);
+	if (ret == NULL) {
+		return false;
+	}
+	//selected file; save to it
+	strcpy(curFileName, ret);
+	return saveFileData();
 }
 
 /**
@@ -235,7 +243,6 @@ void mainLoop(void* nkcPointer){
     //code edit window
     window_flags = NK_WINDOW_BORDER;
     if (nk_begin(ctx, "code", nk_rect(220,34,screenWidth-220,screenHeight-34), window_flags)) {
-    	//TODO: 22 was detected as the necessary number of extra pixels to remove the scrollbar on windows; test on Ubuntu
     	nk_layout_row_dynamic(ctx, screenHeight-34-22, 1);
     	nk_edit_string_zero_terminated(ctx, NK_EDIT_BOX, codeText, sizeof(codeText), nk_filter_default);
     	nk_end(ctx);
