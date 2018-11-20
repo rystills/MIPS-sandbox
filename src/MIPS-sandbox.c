@@ -162,21 +162,7 @@ bool saveFileData() {
 	FILE *fp = fopen(curFileName, "w");
 	if (!fp)
 		exitError("Error: unable to open input file");
-	#ifdef _WIN32
-		//write \r\n in place of \n on windows
-		int charsCopied = -1;
-		const char delim[2] = "\n";
-		char *token = strtok(codeText, delim);
-		while(token != NULL) {
-			fputs(token, fp);
-			fputs("\r\n",fp);
-			charsCopied += strlen(token) + 1;
-			token = strtok(NULL, delim);
-			codeText[charsCopied]='\n';
-		}
-	#else
-		fputs(codeText, fp);
-	#endif
+	fputs(codeText, fp);
 	fclose(fp);
 	return true;
 }
