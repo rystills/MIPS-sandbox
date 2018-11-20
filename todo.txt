@@ -1,6 +1,6 @@
 issues:
--up arrow on the first line does nothing, and up arrow on the very last character brings you to the start of that line, rather than to the prev line
 -scrollbar always scrolls register window
+-no horizontal scrollbar for code window
 
 potential issues to check:
 -spacebar, arrow keys, delete keys can fire continuously on Windows, but may not fire continuously on Ubuntu (untested - check and update me)

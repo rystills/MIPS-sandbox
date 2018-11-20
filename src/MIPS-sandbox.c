@@ -118,7 +118,7 @@ bool loadFileData() {
 		  free(fileData);
 		  exitError("Error: unable to read all data from input file");
 	}
-	//copy file data into code text buffer, stripping windows /r's as we go
+	//copy file data into code text buffer, stripping windows \r's as we go
 	memset(codeText,'\0',sizeof(codeText));
 	int charsCopied = 0;
 	const char delim[2] = "\r";
@@ -233,7 +233,6 @@ void mainLoop(void* nkcPointer){
 			//for edit modes, see https://github.com/vurtun/nuklear/blob/181cfd86c47ae83eceabaf4e640587b844e613b6/src/nuklear.h#L3132
 			nk_edit_string_zero_terminated(ctx, NK_EDIT_FIELD, registers[i], sizeof(registers[i]), nk_filter_decimal);
 			clearRegisterStyle(ctx);
-
     	}
     	registers[0][0] = '0';
     	registers[0][1] = '\0';
