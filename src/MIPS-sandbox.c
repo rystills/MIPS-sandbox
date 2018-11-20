@@ -40,6 +40,7 @@ static int check = nk_false;
 char registers[NUMREGISTERS][REGISTERLEN];
 
 char codeText[999];
+char curFileName[256];
 
 /**
  * check if the specified register contents are invalid; if so, set register style to force red highlight
@@ -129,6 +130,32 @@ bool loadFileData() {
 	}
 
 	free(fileData);
+	strcpy(curFileName, ret);
+	return true;
+}
+
+/**
+ * selects a file and saves the contents of the code window to it
+ * @returns: whether a file was successfully chosen and written to (true) or not (false)
+ */
+bool saveFileDataAs() {
+	return false;
+}
+
+/**
+ * saves the contents of the code window to the last loaded file (if no file was loaded, triggers saveAs window)
+ * @returns: whether a file was successfully chosen and written to (true) or not (false)
+ */
+bool saveFileData() {
+	if (curFileName[0] == '\0') {
+		return saveFileDataAs();
+	}
+	//we are working on an existing file, so save to it
+	FILE *fp = fopen(curFileName, "w");
+	if (!fp)
+		exitError("Error: unable to open input file");
+	fputs(codeText, fp);
+	fclose(fp);
 	return true;
 }
 
@@ -161,9 +188,9 @@ void mainLoop(void* nkcPointer){
 			menubarOpenMenuBounds = nk_window_get_bounds(ctx);
 			nk_layout_row_dynamic(ctx, 25, 1);
 			if (nk_menu_item_label(ctx, "Save", NK_TEXT_LEFT))
-				; //TODO: save file
+				saveFileData();
 			if (nk_menu_item_label(ctx, "Save As", NK_TEXT_LEFT))
-				; //TODO: save file select name
+				saveFileDataAs();
 			if (nk_menu_item_label(ctx, "Load", NK_TEXT_LEFT)) {
 				loadFileData();
 			}
@@ -223,6 +250,7 @@ int main(){
 		setvbuf(stdout, NULL, _IONBF, 0);
 		setvbuf(stderr, NULL, _IONBF, 0);
 	#endif
+	curFileName[0]='\0';
 
     struct nkc nkcx;
     screenWidth = 1280;
