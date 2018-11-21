@@ -112,7 +112,6 @@ bool loadFileData() {
 	}
 	size_t readVal = fread(fileData, fileLen, 1, inFile);
 	fileData[fileLen] = '\0';
-	printf("%s\n",fileData);
 	fclose(inFile);
 	if(readVal != 1) {
 		  free(fileData);
@@ -186,8 +185,9 @@ void mainLoop(void* nkcPointer){
         nkc_stop_main_loop((struct nkc*)nkcPointer);
 
     //menubar window
+    int menubarHeight = 30;
     int window_flags = 0;
-    if (nk_begin(ctx, "mainMenu", nk_rect(0,0,screenWidth,34), window_flags)) {
+    if (nk_begin(ctx, "mainMenu", nk_rect(0,0,screenWidth,menubarHeight), window_flags)) {
         menubarBounds = nk_window_get_bounds(ctx);
     	nk_menubar_begin(ctx);
 		nk_layout_row_begin(ctx, NK_STATIC, 25, 5);
@@ -205,19 +205,22 @@ void mainLoop(void* nkcPointer){
 			nk_menu_end(ctx);
 		}
 
-		nk_layout_row_push(ctx, 45);
+		nk_layout_row_push(ctx, 170);
 		if (nk_menu_begin_label(ctx, "Options", NK_TEXT_LEFT, nk_vec2(120, 35))) {
 			menubarOpenMenuBounds = nk_window_get_bounds(ctx);
 			nk_layout_row_dynamic(ctx, 25, 1);
 			nk_checkbox_label(ctx, "some tickbox", &check);
 			nk_menu_end(ctx);
 		}
+
+		nk_layout_row_push(ctx, screenWidth-45-170-40);
+		nk_label(ctx, curFileName[0]=='\0' ? "Untitled" : curFileName, NK_TEXT_LEFT);
 		nk_menubar_end(ctx);
 		nk_end(ctx);
     }
     //register window
     window_flags = NK_WINDOW_BORDER | NK_WINDOW_BACKGROUND;
-    if (nk_begin(ctx, "registers", nk_rect(0,34,220,screenHeight - 34), window_flags)) {
+    if (nk_begin(ctx, "registers", nk_rect(0,menubarHeight,220,screenHeight - menubarHeight), window_flags)) {
     	nk_layout_row_dynamic(ctx, 25, 2);
     	nk_label(ctx, "Int Register", NK_TEXT_LEFT);
     	nk_label(ctx, "Value", NK_TEXT_LEFT);
@@ -241,8 +244,8 @@ void mainLoop(void* nkcPointer){
 
     //code edit window
     window_flags = NK_WINDOW_BORDER;
-    if (nk_begin(ctx, "code", nk_rect(220,34,screenWidth-220,screenHeight-34), window_flags)) {
-    	nk_layout_row_dynamic(ctx, screenHeight-34-22, 1);
+    if (nk_begin(ctx, "code", nk_rect(220,menubarHeight,screenWidth-220,screenHeight-menubarHeight), window_flags)) {
+    	nk_layout_row_dynamic(ctx, screenHeight-menubarHeight-22, 1);
     	nk_edit_string_zero_terminated(ctx, NK_EDIT_BOX, codeText, sizeof(codeText), nk_filter_default);
     	nk_end(ctx);
     }
