@@ -11,7 +11,6 @@ potential issues to check:
 desired features:
 -menubutton hover indicator
 -horizontal scrollbar for code window
--hotkeys
 -copy/paste (see nuklear.h line 22794)
 -undo/redo (see nuklear.h line 4160)
 -enter newline should also tab to the current line indentation level

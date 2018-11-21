@@ -40,7 +40,9 @@ static int check = nk_false;
 char registers[NUMREGISTERS][REGISTERLEN];
 
 char codeText[999];
+char codeTextPrev[999];
 char curFileName[256];
+char modifiedFileName[257];
 
 /**
  * check if the specified register contents are invalid; if so, set register style to force red highlight
@@ -130,6 +132,7 @@ bool loadFileData() {
 
 	free(fileData);
 	strcpy(curFileName, ret);
+	strcpy(codeTextPrev,codeText);
 	return true;
 }
 
@@ -154,6 +157,10 @@ bool saveFileDataAs() {
  * @returns: whether a file was successfully chosen and written to (true) or not (false)
  */
 bool saveFileData() {
+	//nothing to do if we haven't changed anything
+	if (strcmp(codeText,codeTextPrev)==0) {
+		return false;
+	}
 	if (curFileName[0] == '\0') {
 		return saveFileDataAs();
 	}
@@ -163,6 +170,7 @@ bool saveFileData() {
 		exitError("Error: unable to open input file");
 	fputs(codeText, fp);
 	fclose(fp);
+	strcpy(codeTextPrev,codeText);
 	return true;
 }
 
@@ -235,7 +243,11 @@ void mainLoop(void* nkcPointer){
 		}
 
 		nk_layout_row_push(ctx, screenWidth-45-170-40);
-		nk_label(ctx, curFileName[0]=='\0' ? "Untitled" : curFileName, NK_TEXT_LEFT);
+		//add an asterisk to fileName when the file contents have been modified
+		modifiedFileName[0] = strcmp(codeText,codeTextPrev)==0 ? '\0' : '*';
+		modifiedFileName[1]='\0';
+		strcat(modifiedFileName,curFileName);
+		nk_label(ctx, curFileName[0]=='\0' ? "Untitled" : modifiedFileName, NK_TEXT_LEFT);
 		nk_menubar_end(ctx);
 		nk_end(ctx);
     }
