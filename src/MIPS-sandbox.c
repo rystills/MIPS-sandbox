@@ -167,6 +167,24 @@ bool saveFileData() {
 }
 
 /**
+ * check and resolve custom hotkeys
+ * @param in: the current frame's input
+ */
+void handleHotKeys(const struct nk_input *in) {
+	for (int i = 0; i < NK_KEY_MAX; ++i) {
+		if (i == NK_KEY_SAVE && nk_input_is_key_pressed(in, (enum nk_keys)i)) {
+			if (in->keyboard.keys[NK_KEY_SHIFT].down)
+				saveFileDataAs();
+			else
+				saveFileData();
+		}
+		else if (i == NK_KEY_OPEN && nk_input_is_key_pressed(in, (enum nk_keys)i)) {
+			loadFileData();
+		}
+	}
+}
+
+/**
  * infinite main loop for our program; runs the nuklear GUI as well as all program logic
  * @param nkcPointer: void* pointer to our nuklear nkc struct
  */
@@ -183,6 +201,9 @@ void mainLoop(void* nkcPointer){
     union nkc_event e = nkc_poll_events((struct nkc*)nkcPointer);
     if( (e.type == NKC_EWINDOW) && (e.window.param == NKC_EQUIT) )
         nkc_stop_main_loop((struct nkc*)nkcPointer);
+
+    //hotkeys
+    handleHotKeys(in);
 
     //menubar window
     int menubarHeight = 30;

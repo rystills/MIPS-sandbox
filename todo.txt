@@ -1,6 +1,6 @@
 issues:
+-windows driver only supports LCONTROL (not RCONTROL)
 -scrollbar always scrolls register window
--no horizontal scrollbar for code window
 
 potential issues to check:
 -spacebar, arrow keys, delete keys can fire continuously on Windows, but may not fire continuously on Ubuntu (untested - check and update me)
@@ -9,6 +9,8 @@ potential issues to check:
 -22 was detected as the necessary number of extra pixels to remove the scrollbar on windows; test on Ubuntu
 
 desired features:
+-menubutton hover indicator
+-horizontal scrollbar for code window
 -hotkeys
 -copy/paste (see nuklear.h line 22794)
 -undo/redo (see nuklear.h line 4160)
