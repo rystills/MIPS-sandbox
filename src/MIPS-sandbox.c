@@ -267,11 +267,12 @@ void mainLoop(void* nkcPointer){
 			}
 			nk_label(ctx, registerNames[i], NK_TEXT_LEFT);
 			//for edit modes, see https://github.com/vurtun/nuklear/blob/181cfd86c47ae83eceabaf4e640587b844e613b6/src/nuklear.h#L3132
-			nk_edit_string_zero_terminated(ctx, NK_EDIT_FIELD, registers[i], sizeof(registers[i]), nk_filter_decimal);
+			nk_edit_string_zero_terminated(ctx, NK_EDIT_FIELD | NK_EDIT_READ_ONLY *(i==0), registers[i], sizeof(registers[i]), nk_filter_decimal);
+			//keep the cursor from passing the end of the register field (purely serves as a graphical improvement)
+			if (ctx->current->edit.cursor > REGISTERLEN-1)
+				ctx->current->edit.cursor = REGISTERLEN-1;
 			clearRegisterStyle(ctx);
     	}
-    	registers[0][0] = '0';
-    	registers[0][1] = '\0';
     	nk_end(ctx);
     }
 
@@ -292,6 +293,8 @@ int main(){
 		setvbuf(stdout, NULL, _IONBF, 0);
 		setvbuf(stderr, NULL, _IONBF, 0);
 	#endif
+	registers[0][0] = '0';
+	registers[0][1] = '\0';
 	curFileName[0]='\0';
 
     struct nkc nkcx;

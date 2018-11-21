@@ -1,4 +1,5 @@
 issues:
+-code edit scrollbar hides when inactive (should always be visible, as with the register window)
 -windows driver only supports LCONTROL (not RCONTROL)
 -scrollbar always scrolls register window
 
