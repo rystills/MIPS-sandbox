@@ -4,10 +4,8 @@ issues:
 -scrollbar always scrolls register window
 
 potential issues to check:
--spacebar, arrow keys, delete keys can fire continuously on Windows, but may not fire continuously on Ubuntu (untested - check and update me)
 -determine why windows ProggyClean size 19 is equal to Ubuntu ProggyClean size 13
 -maximized window on windows is a bit laggy, alt + tabbing and alt + f4 on Ubuntu are very laggy
--22 was detected as the necessary number of extra pixels to remove the scrollbar on windows; test on Ubuntu
 
 desired features:
 -add .asm automatically to save as file

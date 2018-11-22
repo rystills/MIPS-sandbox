@@ -7,9 +7,11 @@
 #define NOC_FILE_DIALOG_IMPLEMENTATION
 #ifdef _WIN32
 #define fontSize 19
+#define fontPaddingExtra 0
 #define NOC_FILE_DIALOG_WIN32
 #else
 #define fontSize 13
+#define fontPaddingExtra 3
 #endif
 #ifdef __APPLE__
 #define NOC_FILE_DIALOG_OSX
@@ -222,7 +224,7 @@ void mainLoop(void* nkcPointer){
     int windowPaddingSize = 22; //number of pixels needed to prevent an unneeded scrollbar from forming
 
     //menubar window
-    int menubarHeight = 30;
+    int menubarHeight = 30 + fontPaddingExtra;
     int window_flags = 0;
     if (nk_begin(ctx, "mainMenu", nk_rect(0,0,screenWidth,menubarHeight), window_flags)) {
         menubarBounds = nk_window_get_bounds(ctx);
