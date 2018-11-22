@@ -43,6 +43,7 @@ char codeText[999];
 char codeTextPrev[999];
 char curFileName[256];
 char modifiedFileName[257];
+char consoleText[999];
 
 /**
  * check if the specified register contents are invalid; if so, set register style to force red highlight
@@ -213,6 +214,9 @@ void mainLoop(void* nkcPointer){
     //hotkeys
     handleHotKeys(in);
 
+    //layout constants
+    int windowPaddingSize = 22; //number of pixels needed to prevent an unneeded scrollbar from forming
+
     //menubar window
     int menubarHeight = 30;
     int window_flags = 0;
@@ -278,11 +282,18 @@ void mainLoop(void* nkcPointer){
 
     //code edit window
     window_flags = NK_WINDOW_BORDER;
-    if (nk_begin(ctx, "code", nk_rect(220,menubarHeight,screenWidth-220,screenHeight-menubarHeight), window_flags)) {
-    	nk_layout_row_dynamic(ctx, screenHeight-menubarHeight-22, 1);
+    if (nk_begin(ctx, "code", nk_rect(220,menubarHeight,screenWidth-220,screenHeight-menubarHeight-200), window_flags)) {
+    	nk_layout_row_dynamic(ctx, screenHeight-menubarHeight-200-windowPaddingSize, 1);
     	nk_edit_string_zero_terminated(ctx, NK_EDIT_BOX, codeText, sizeof(codeText), nk_filter_default);
     	nk_end(ctx);
     }
+
+    //console window
+    if (nk_begin(ctx, "console", nk_rect(220,screenHeight-200,screenWidth-220,200), window_flags)) {
+		nk_layout_row_dynamic(ctx, 200-windowPaddingSize, 1);
+		nk_edit_string_zero_terminated(ctx, NK_EDIT_SELECTABLE | NK_EDIT_MULTILINE | NK_EDIT_CLIPBOARD, consoleText, sizeof(consoleText), nk_filter_default);
+		nk_end(ctx);
+	}
 
 	nkc_render((struct nkc*)nkcPointer, nk_rgb(60,60,60) );
 }
