@@ -10,7 +10,8 @@ potential issues to check:
 -22 was detected as the necessary number of extra pixels to remove the scrollbar on windows; test on Ubuntu
 
 desired features:
--menubutton hover indicator
+-add .asm automatically to save as file
+-main menu button hover indicators
 -horizontal scrollbar for code window
 -copy/paste (see nuklear.h line 22794)
 -undo/redo (see nuklear.h line 4160)

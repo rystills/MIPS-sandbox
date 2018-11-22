@@ -41,8 +41,8 @@ char registers[NUMREGISTERS][REGISTERLEN];
 
 char codeText[999];
 char codeTextPrev[999];
-char curFileName[256];
-char modifiedFileName[257];
+char curFileName[260];
+char modifiedFileName[261];
 char consoleText[999];
 
 /**
@@ -150,6 +150,10 @@ bool saveFileDataAs() {
 	}
 	//selected file; save to it
 	strcpy(curFileName, ret);
+	if (strcmp(curFileName+strlen(curFileName)-4,".asm")!=0) {
+		strcat(curFileName,".asm");
+	}
+	codeTextPrev[0]='\0';
 	return saveFileData();
 }
 
@@ -158,12 +162,12 @@ bool saveFileDataAs() {
  * @returns: whether a file was successfully chosen and written to (true) or not (false)
  */
 bool saveFileData() {
-	//nothing to do if we haven't changed anything
-	if (strcmp(codeText,codeTextPrev)==0) {
-		return false;
-	}
 	if (curFileName[0] == '\0') {
 		return saveFileDataAs();
+	}
+	//disallow saving unchanged file unless its empty
+	if (strlen(codeText) > 0 && strcmp(codeText,codeTextPrev)==0) {
+		return false;
 	}
 	//we are working on an existing file, so save to it
 	FILE *fp = fopen(curFileName, "w");
