@@ -8,7 +8,6 @@ potential issues to check:
 -maximized window on windows is a bit laggy, alt + tabbing and alt + f4 on Ubuntu are very laggy
 
 desired features:
--add .asm automatically to save as file
 -main menu button hover indicators
 -horizontal scrollbar for code window
 -copy/paste (see nuklear.h line 22794)

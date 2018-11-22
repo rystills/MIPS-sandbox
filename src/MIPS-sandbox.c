@@ -1,7 +1,5 @@
 #define NKC_IMPLEMENTATION
-#define NK_INCLUDE_FONT_BAKING
-#define NK_INCLUDE_DEFAULT_FONT
-//#define NKC_DISABLE_DEFAULT_FONT
+#define NKC_DISABLE_DEFAULT_FONT
 #include "../nuklear_cross/nuklear_cross.h"
 
 #define NOC_FILE_DIALOG_IMPLEMENTATION
