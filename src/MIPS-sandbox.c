@@ -64,6 +64,29 @@ bool checkSetInvalidRegisterContents(int regNum, struct nk_context *ctx) {
 }
 
 /**
+ * count the number of lines in the code text string up to the specified position
+ * @param pos: the character number up to which to count newlines in the code text string
+ * @returns: the number of lines in the code text string up to the specified position
+ */
+int lineCountTo(int pos) {
+	int lines = 0;
+	for (int i = 0; i < pos; ++i)
+		if (codeText[i] == '\n') ++lines;
+	return lines;
+}
+
+/**
+ * count the number of characters on the same line up to the specified position
+ * @param pos: the character number up to which to count characters in the code text string
+ * @returns: the number of characters on the same line up to the specified position
+ */
+int lineCharCount(int pos) {
+	int chars = 0;
+	for (int i = pos; i >= 0 && codeText[i] != '\n'; --i,++chars);
+	return chars;
+}
+
+/**
  * reset the 'edit' style (used for register input) to default
  * @param ctx: the current nuklear context
  */
@@ -209,6 +232,7 @@ void mainLoop(void* nkcPointer){
     struct nk_rect menubarBounds;
     struct nk_rect menubarOpenMenuBounds = menubarBounds;
     const struct nk_input *in = &ctx->input;
+    int curHeight = 0;
 
     //poll events
     union nkc_event e = nkc_poll_events((struct nkc*)nkcPointer);
@@ -219,12 +243,12 @@ void mainLoop(void* nkcPointer){
     handleHotKeys(in);
 
     //layout constants
-    int windowPaddingSize = 22; //number of pixels needed to prevent an unneeded scrollbar from forming
+    int textEditWindowPaddingSize = 22; //number of pixels needed to prevent an unneeded scrollbar from forming in a textedit window
 
     //menubar window
     int menubarHeight = 30 + fontPaddingExtra;
     int window_flags = 0;
-    if (nk_begin(ctx, "mainMenu", nk_rect(0,0,screenWidth,menubarHeight), window_flags)) {
+    if (nk_begin(ctx, "mainMenu", nk_rect(0,curHeight,screenWidth,menubarHeight), window_flags)) {
         menubarBounds = nk_window_get_bounds(ctx);
     	nk_menubar_begin(ctx);
 		nk_layout_row_begin(ctx, NK_STATIC, 25, 5);
@@ -259,9 +283,10 @@ void mainLoop(void* nkcPointer){
 		nk_menubar_end(ctx);
 		nk_end(ctx);
     }
+    curHeight += menubarHeight;
     //register window
     window_flags = NK_WINDOW_BORDER | NK_WINDOW_BACKGROUND;
-    if (nk_begin(ctx, "registers", nk_rect(0,menubarHeight,220,screenHeight - menubarHeight), window_flags)) {
+    if (nk_begin(ctx, "registers", nk_rect(0,curHeight,220,screenHeight - curHeight), window_flags)) {
     	nk_layout_row_dynamic(ctx, 25, 2);
     	nk_label(ctx, "Int Register", NK_TEXT_LEFT);
     	nk_label(ctx, "Value", NK_TEXT_LEFT);
@@ -286,15 +311,21 @@ void mainLoop(void* nkcPointer){
 
     //code edit window
     window_flags = NK_WINDOW_BORDER;
-    if (nk_begin(ctx, "code", nk_rect(220,menubarHeight,screenWidth-220,screenHeight-menubarHeight-200), window_flags)) {
-    	nk_layout_row_dynamic(ctx, screenHeight-menubarHeight-200-windowPaddingSize, 1);
+    if (nk_begin(ctx, "code", nk_rect(220,curHeight,screenWidth-220,screenHeight-curHeight-200+19), window_flags)) {
+    	nk_layout_row_dynamic(ctx, screenHeight-curHeight-200-textEditWindowPaddingSize, 1);
     	nk_edit_string_zero_terminated(ctx, NK_EDIT_BOX, codeText, sizeof(codeText), nk_filter_default);
+    	//show line and char number
+    	nk_layout_row_dynamic(ctx, 15, 2);
+    	char cursorPosStr[100];
+    	sprintf(cursorPosStr,"%d:%d",1+lineCountTo(ctx->current->edit.cursor),lineCharCount(ctx->current->edit.cursor));
+    	nk_label(ctx,cursorPosStr,NK_TEXT_LEFT);
     	nk_end(ctx);
     }
+    curHeight += screenHeight-curHeight-200+19;
 
     //console window
-    if (nk_begin(ctx, "console", nk_rect(220,screenHeight-200,screenWidth-220,200), window_flags)) {
-		nk_layout_row_dynamic(ctx, 200-windowPaddingSize, 1);
+    if (nk_begin(ctx, "console", nk_rect(220,curHeight,screenWidth-220,200-19), window_flags)) {
+		nk_layout_row_dynamic(ctx, 200-19-textEditWindowPaddingSize, 1);
 		nk_edit_string_zero_terminated(ctx, NK_EDIT_SELECTABLE | NK_EDIT_MULTILINE | NK_EDIT_CLIPBOARD, consoleText, sizeof(consoleText), nk_filter_default);
 		nk_end(ctx);
 	}
