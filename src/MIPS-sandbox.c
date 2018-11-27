@@ -35,6 +35,7 @@
 extern int screenWidth;
 extern int screenHeight;
 
+bool loadedFile = false;
 static int check = nk_false;
 //signed 32 bit max val = 2,147,483,647, or 10 digits; need 3 additional digits for optional - sign and \0
 char registers[NUMREGISTERS][REGISTERLEN];
@@ -157,6 +158,7 @@ bool loadFileData() {
 	free(fileData);
 	strcpy(curFileName, ret);
 	strcpy(codeTextPrev,codeText);
+	loadedFile = true;
 	return true;
 }
 
@@ -312,6 +314,11 @@ void mainLoop(void* nkcPointer){
     //code edit window
     window_flags = NK_WINDOW_BORDER;
     if (nk_begin(ctx, "code", nk_rect(220,curHeight,screenWidth-220,screenHeight-curHeight-200+19), window_flags)) {
+    	if (loadedFile) {
+    		//reset selection on file load to avoid potential out of bounds errors
+    		ctx->current->edit.sel_start = ctx->current->edit.sel_end = 0;
+    		loadedFile = false;
+    	}
     	nk_layout_row_dynamic(ctx, screenHeight-curHeight-200-textEditWindowPaddingSize, 1);
     	nk_edit_string_zero_terminated(ctx, NK_EDIT_BOX, codeText, sizeof(codeText), nk_filter_default);
     	//show line and char number
