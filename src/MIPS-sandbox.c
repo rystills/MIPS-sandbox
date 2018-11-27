@@ -82,8 +82,8 @@ int lineCountTo(int pos) {
  * @returns: the number of characters on the same line up to the specified position
  */
 int lineCharCount(int pos) {
-	int chars = 0;
-	for (int i = pos; i >= 0 && codeText[i] != '\n'; --i,++chars);
+	int chars = 1;
+	for (int i = pos-1; i >= 0 && codeText[i] != '\n'; --i,++chars);
 	return chars;
 }
 
