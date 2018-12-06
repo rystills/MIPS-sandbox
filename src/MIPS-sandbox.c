@@ -40,11 +40,14 @@ static int check = nk_false;
 //signed 32 bit max val = 2,147,483,647, or 10 digits; need 3 additional digits for optional - sign and \0
 char registers[NUMREGISTERS][REGISTERLEN];
 
-char codeText[999];
-char codeTextPrev[999];
+//for now, use a fixed size code window
+#define NUMCODECHARS 999
+char codeText[NUMCODECHARS];
+char codeTextPrev[NUMCODECHARS];
 char curFileName[260];
 char modifiedFileName[261];
 char consoleText[999];
+char curOpcode[6];
 
 /**
  * check if the specified register contents are invalid; if so, set register style to force red highlight
@@ -223,6 +226,68 @@ void handleHotKeys(const struct nk_input *in) {
 }
 
 /**
+ * set all registers to the value 0. This would not be guaranteed in practice, but should make fresh runs visually cleaner
+ */
+void clearRegisters() {
+	for (int i = 1; i < NUMREGISTERS; ++i) {
+		registers[i][0] = '0';
+		registers[i][1] = '\0';
+	}
+}
+
+/**increment the program counter to the next instruction
+ * @param pc: the index of the program counter in the code string
+ * @returns: updated location of program counter
+ */
+int incrementPc(int pc) {
+	//exit on empty code or initial value of null terminator
+	if (codeText[0] == '\0' || (pc != -1 && codeText[pc] == '\0')) return -1;
+	int startPc = pc;
+	for (++pc; pc != startPc; ++pc) {
+		//ignore whitespace
+		for(; codeText[pc] != '\0' && (codeText[pc] == ' ' || codeText[pc] == '\n'); ++pc);
+		if (codeText[pc] == '\0') {
+			return -1;
+		}
+		//ignore comment lines
+		if (codeText[pc] == '#') {
+			for(; codeText[pc] != '\0' && codeText[pc] != '\n'; ++pc);
+			if (codeText[pc] == '\0') {
+				return -1;
+			}
+		}
+		break;
+	}
+	return pc;
+}
+
+/**
+ * execute the simulation on the current file. This is a slow temporary solution that iterates through code lines
+ */
+void runSimulation() {
+	clearRegisters();
+
+	//init program counter pc
+	int pc=-1;
+	for(;;) {
+		pc = incrementPc(pc);
+		if (pc == -1) return;
+		int spaceIndex;
+		for (spaceIndex = pc; codeText[spaceIndex] != '\0' &&  codeText[spaceIndex] != ' ' && codeText[spaceIndex] != '\n';++spaceIndex);
+		strncpy(curOpcode,codeText+pc,spaceIndex-pc);
+		printf("pc = %d opcode = %s\n",pc,curOpcode);
+		/*switch(curOpcode) {
+		case OpCode1:
+			break;
+		case OpCode2:
+			break;
+		}*/
+		pc = spaceIndex;
+
+	}
+}
+
+/**
  * infinite main loop for our program; runs the nuklear GUI as well as all program logic
  * @param nkcPointer: void* pointer to our nuklear nkc struct
  */
@@ -255,7 +320,7 @@ void mainLoop(void* nkcPointer){
     	nk_menubar_begin(ctx);
 		nk_layout_row_begin(ctx, NK_STATIC, 25, 5);
 		nk_layout_row_push(ctx, 45);
-		if (nk_menu_begin_label(ctx, "File", NK_TEXT_LEFT, nk_vec2(120, 95))) {
+		if (nk_menu_begin_label(ctx, "File", NK_TEXT_LEFT, nk_vec2(120, 125))) {
 			menubarOpenMenuBounds = nk_window_get_bounds(ctx);
 			nk_layout_row_dynamic(ctx, 25, 1);
 			if (nk_menu_item_label(ctx, "Save", NK_TEXT_LEFT))
@@ -264,6 +329,9 @@ void mainLoop(void* nkcPointer){
 				saveFileDataAs();
 			if (nk_menu_item_label(ctx, "Load", NK_TEXT_LEFT)) {
 				loadFileData();
+			}
+			if (nk_menu_item_label(ctx, "Run", NK_TEXT_LEFT)) {
+				runSimulation();
 			}
 			nk_menu_end(ctx);
 		}
