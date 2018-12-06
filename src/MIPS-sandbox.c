@@ -262,16 +262,27 @@ int incrementPc(int pc) {
 }
 
 /**
+ * write a message to the output console
+ * @param msg: the string message to write
+ */
+void writeConsole(char* msg) {
+	int i;
+	for (i = 0; consoleText[i] != '\0'; ++i);
+	strcpy(consoleText+i,msg);
+}
+
+/**
  * execute the simulation on the current file. This is a slow temporary solution that iterates through code lines
  */
 void runSimulation() {
 	clearRegisters();
 
+	writeConsole("Beginning Run\n");
 	//init program counter pc
 	int pc=-1;
 	for(;;) {
 		pc = incrementPc(pc);
-		if (pc == -1) return;
+		if (pc == -1) break;
 		int spaceIndex;
 		for (spaceIndex = pc; codeText[spaceIndex] != '\0' &&  codeText[spaceIndex] != ' ' && codeText[spaceIndex] != '\n';++spaceIndex);
 		strncpy(curOpcode,codeText+pc,spaceIndex-pc);
@@ -285,6 +296,7 @@ void runSimulation() {
 		pc = spaceIndex;
 
 	}
+	writeConsole("Run Completed\n");
 }
 
 /**
