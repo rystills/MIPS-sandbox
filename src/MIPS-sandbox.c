@@ -1,16 +1,22 @@
 #define NKC_IMPLEMENTATION
 #define NKC_DISABLE_DEFAULT_FONT
 #include "../nuklear_cross/nuklear_cross.h"
+#include <strings.h>
 
 #define NOC_FILE_DIALOG_IMPLEMENTATION
 #ifdef _WIN32
+//tweak the formatting for windows
 #define fontSize 19
 #define fontPaddingExtra 0
 #define NOC_FILE_DIALOG_WIN32
 #else
+//platform independent case independent string comparison
+#define stricmp strcasecmp
+//tweak the formatting for non-windows
 #define fontSize 13
 #define fontPaddingExtra 3
 #endif
+
 #ifdef __APPLE__
 #define NOC_FILE_DIALOG_OSX
 #endif
@@ -21,7 +27,6 @@
 #define NOC_FILE_DIALOG_GTK
 #endif
 #include "../noc/noc_file_dialog.h"
-
 #include <stdio.h>
 //inttypes allows us to guarantee n-bit ints
 #include <inttypes.h>
@@ -29,9 +34,6 @@
 #include "registers.h"
 #include "opcodes.h"
 #include "linkedList.h"
-
-#define NUMREGISTERS 32
-#define REGISTERLEN 12
 
 extern int screenWidth;
 extern int screenHeight;
@@ -278,7 +280,7 @@ void writeConsole(char* msg) {
  */
 int opcodeStrToInt() {
 	for (int i = 0; i < NUMOPCODES; ++i) {
-		if (strcmp(*opcodeNames[i],curOpcode) == 0) {
+		if (stricmp(opcodeNames[i],curOpcode) == 0) {
 			return i;
 		}
 	}
@@ -303,15 +305,17 @@ void runSimulation() {
 			printf("Error: unrecognized opcode at position %d\n",pc);
 		}
 		else {
-			strncpy(curOpcode,codeText+pc,spaceIndex-pc);
+			*curOpcode = '\0';
+			strncat(curOpcode,codeText+pc,spaceIndex-pc);
 			printf("pc = %d opcode = %s\n",pc,curOpcode);
-		}
-		switch(opcodeStrToInt()) {
-		case addi:
-			break;
-		default:
-			printf("Error: unrecognized opcode %s\n",curOpcode);
-			break;
+
+			switch(opcodeStrToInt()) {
+			case addi:
+				break;
+			default:
+				printf("Error: unrecognized opcode %s\n",curOpcode);
+				break;
+			}
 		}
 		pc = spaceIndex;
 
