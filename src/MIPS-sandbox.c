@@ -27,6 +27,7 @@
 #include <inttypes.h>
 #include <stdbool.h>
 #include "registers.h"
+#include "opcodes.h"
 #include "linkedList.h"
 
 #define NUMREGISTERS 32
@@ -47,7 +48,7 @@ char codeTextPrev[NUMCODECHARS];
 char curFileName[260];
 char modifiedFileName[261];
 char consoleText[999];
-char curOpcode[6];
+char curOpcode[7];
 
 /**
  * check if the specified register contents are invalid; if so, set register style to force red highlight
@@ -272,6 +273,19 @@ void writeConsole(char* msg) {
 }
 
 /**
+ * convert the string representation of curOpcode to its integer enum value
+ * @returns: the integer value corresponding to the enum for curOpcode, or -1 if the opcode is not found
+ */
+int opcodeStrToInt() {
+	for (int i = 0; i < NUMOPCODES; ++i) {
+		if (strcmp(*opcodeNames[i],curOpcode) == 0) {
+			return i;
+		}
+	}
+	return -1;
+}
+
+/**
  * execute the simulation on the current file. This is a slow temporary solution that iterates through code lines
  */
 void runSimulation() {
@@ -285,14 +299,20 @@ void runSimulation() {
 		if (pc == -1) break;
 		int spaceIndex;
 		for (spaceIndex = pc; codeText[spaceIndex] != '\0' &&  codeText[spaceIndex] != ' ' && codeText[spaceIndex] != '\n';++spaceIndex);
-		strncpy(curOpcode,codeText+pc,spaceIndex-pc);
-		printf("pc = %d opcode = %s\n",pc,curOpcode);
-		/*switch(curOpcode) {
-		case OpCode1:
+		if (spaceIndex - pc > 6) {
+			printf("Error: unrecognized opcode at position %d\n",pc);
+		}
+		else {
+			strncpy(curOpcode,codeText+pc,spaceIndex-pc);
+			printf("pc = %d opcode = %s\n",pc,curOpcode);
+		}
+		switch(opcodeStrToInt()) {
+		case addi:
 			break;
-		case OpCode2:
+		default:
+			printf("Error: unrecognized opcode %s\n",curOpcode);
 			break;
-		}*/
+		}
 		pc = spaceIndex;
 
 	}
