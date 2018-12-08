@@ -50,7 +50,24 @@ char codeTextPrev[NUMCODECHARS];
 char curFileName[260];
 char modifiedFileName[261];
 char consoleText[999];
-char curOpcode[7];
+int curOpcode;
+char curOpcodeArg0[16];
+char curOpcodeArg1[16];
+char curOpcodeArg2[16];
+
+/**check whether or not a string is a number
+ * @param str: string to check
+ * @param len: string length
+ * @returns: whether str is a valid number (true) or not (false)
+ */
+bool stringIsNumber(char* str,int len) {
+	for (int i = 0; i < len && str[i]!='\0'; ++i) {
+		if (!((i == 0 && str[i] == '-') || isdigit(str[i]) || str[i] == '\0')) {
+			return false;
+		}
+	}
+	return true;
+}
 
 /**
  * check if the specified register contents are invalid; if so, set register style to force red highlight
@@ -59,13 +76,11 @@ char curOpcode[7];
  * @returns: whether the specified register is invalid (true) or not (false)
  */
 bool checkSetInvalidRegisterContents(int regNum, struct nk_context *ctx) {
-	for (int i = 0; i < REGISTERLEN; ++i) {
-		if (!((i == 0 && registers[regNum][i] == '-') || isdigit(registers[regNum][i]) || registers[regNum][i] == '\0')) {
-			ctx->style.edit.normal.data.color =nk_rgb(255,0,0);
-			ctx->style.edit.active.data.color =nk_rgb(255,0,0);
-			ctx->style.edit.hover.data.color =nk_rgb(255,0,0);
-			return true;
-		}
+	if (!(stringIsNumber(registers[regNum],REGISTERLEN))) {
+		ctx->style.edit.normal.data.color =nk_rgb(255,0,0);
+		ctx->style.edit.active.data.color =nk_rgb(255,0,0);
+		ctx->style.edit.hover.data.color =nk_rgb(255,0,0);
+		return true;
 	}
 	return false;
 }
@@ -275,16 +290,100 @@ void writeConsole(char* msg) {
 }
 
 /**
- * convert the string representation of curOpcode to its integer enum value
- * @returns: the integer value corresponding to the enum for curOpcode, or -1 if the opcode is not found
+ * convert the string representation of the specified register to its integer enum value
+ * @param REGISTER: the register string to convert
+ * @returns: the integer value corresponding to the enum for REGISTER, or -1 if the opcode is not found
  */
-int opcodeStrToInt() {
-	for (int i = 0; i < NUMOPCODES; ++i) {
-		if (stricmp(opcodeNames[i],curOpcode) == 0) {
+int registerStrToInt(char* REGISTER) {
+	for (int i = 0; i < NUMREGISTERS; ++i) {
+		if (stricmp(registerNames[i],REGISTER) == 0) {
 			return i;
 		}
 	}
 	return -1;
+}
+
+/**
+ * convert the string representation of the specified opcode to its integer enum value
+ * @param opcode: the opcode string to convert
+ * @returns: the integer value corresponding to the enum for opcode, or -1 if the opcode is not found
+ */
+int opcodeStrToInt(char* opcode) {
+	for (int i = 0; i < NUMOPCODES; ++i) {
+		if (stricmp(opcodeNames[i],opcode) == 0) {
+			return i;
+		}
+	}
+	return -1;
+}
+
+/**
+ * parses the arguments in the currently pointed to opcode, storing them in curOpcodeArg1-3
+ * @param pc: current program counter location
+ * @returns: whether or not the args were parsed successfully
+ */
+bool opcodeParseArgs(int *pc) {
+	int curOpcodeNum = -1;
+	int curOpcodeStartLoc;
+	int curOpcodeEndLoc;
+	int parsing = false;
+	for (;; ++*pc) {
+		if (codeText[*pc] == ' ' || codeText[*pc] == '\n' || codeText[*pc] == '\0') {
+			//navigate to the first argument
+			if (!parsing) {
+				parsing = true;
+				curOpcodeStartLoc  = *pc+1;
+				continue;
+			}
+			//get the start and end of the current argument, and make sure the argument length is within a reasonable bound
+			curOpcodeEndLoc = *pc;
+			if (++curOpcodeNum > 2) {
+				printf("Error: too many args detected\n");
+				return false;
+			}
+			if (curOpcodeEndLoc - curOpcodeStartLoc > 15) {
+				printf("Error: arg is too long, likely invalid\n");
+				return false;
+			}
+			char curOpcodeStr[16];
+			memset(&curOpcodeStr[0], 0, sizeof(curOpcodeStr));
+
+			strncpy(curOpcodeStr,codeText+curOpcodeStartLoc,curOpcodeEndLoc-curOpcodeStartLoc);
+			//check the current argument against our opcode's arglist
+			printf("current opcode string? %s\n",curOpcodeStr);
+			switch(opcodeArgs[curOpcode][curOpcodeNum]) {
+				case REGISTER:
+					if (registerStrToInt(curOpcodeStr) == -1) {
+						printf("Error: opcode expects register for argument %d, but did not map to a known register\n",curOpcodeNum);
+						return false;
+					}
+					break;
+				case INTEGER:
+					if (!stringIsNumber(curOpcodeStr,20)) {
+						printf("Error: opcode expects integer for argument %d, but did not map to a valid integer\n",curOpcodeNum);
+					}
+					break;
+				case LABEL:
+					//TODO: fill me out
+					break;
+				case OFFSET:
+					//TODO: fill me out
+					break;
+				case NONE:
+					//TODO: fill me out
+					break;
+			}
+			if (curOpcodeNum == 0) strcpy(curOpcodeArg0,curOpcodeStr);
+			else if (curOpcodeNum == 1) strcpy(curOpcodeArg1,curOpcodeStr);
+			else strcpy(curOpcodeArg2,curOpcodeStr);
+			//continue on to the next argument
+			curOpcodeStartLoc = curOpcodeEndLoc+1;
+		}
+		if (codeText[*pc] == '\0') {
+			break;
+		}
+	}
+	return true;
 }
 
 /**
@@ -303,23 +402,32 @@ void runSimulation() {
 		for (spaceIndex = pc; codeText[spaceIndex] != '\0' &&  codeText[spaceIndex] != ' ' && codeText[spaceIndex] != '\n';++spaceIndex);
 		if (spaceIndex - pc > 6) {
 			printf("Error: unrecognized opcode at position %d\n",pc);
+			pc = spaceIndex;
 		}
 		else {
-			*curOpcode = '\0';
-			strncat(curOpcode,codeText+pc,spaceIndex-pc);
-			printf("pc = %d opcode = %s\n",pc,curOpcode);
-			int opcode = opcodeStrToInt();
-			if (opcode == -1) {
-				printf("Error: unrecognized opcode %s\n",curOpcode);
+			char opcode[7];
+			*opcode = '\0';
+			strncat(opcode,codeText+pc,spaceIndex-pc);
+			printf("pc = %d opcode = %s\n",pc,opcode);
+			curOpcode = opcodeStrToInt(opcode);
+			if (curOpcode == -1) {
+				printf("Error: unrecognized opcode %s\n",opcode);
 				break;
 			}
-			//char* args =
-			switch(opcodeStrToInt()) {
-			case ADDI:
+			int nextPc = pc;
+			bool validArgs = opcodeParseArgs(&nextPc);
+			printf("args = %s, %s, %s",curOpcodeArg0,curOpcodeArg1,curOpcodeArg2);
+			if (!validArgs) {
 				break;
 			}
+			else {
+				switch(curOpcode) {
+					case ADDI:
+						break;
+				}
+			}
+			pc = nextPc;
 		}
-		pc = spaceIndex;
 
 	}
 	writeConsole("Run Completed\n");
