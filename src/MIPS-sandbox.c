@@ -308,12 +308,14 @@ void runSimulation() {
 			*curOpcode = '\0';
 			strncat(curOpcode,codeText+pc,spaceIndex-pc);
 			printf("pc = %d opcode = %s\n",pc,curOpcode);
-
-			switch(opcodeStrToInt()) {
-			case addi:
-				break;
-			default:
+			int opcode = opcodeStrToInt();
+			if (opcode == -1) {
 				printf("Error: unrecognized opcode %s\n",curOpcode);
+				break;
+			}
+			//char* args =
+			switch(opcodeStrToInt()) {
+			case ADDI:
 				break;
 			}
 		}
