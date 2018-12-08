@@ -400,11 +400,13 @@ void runSimulation() {
 		if (pc == -1) break;
 		int spaceIndex;
 		for (spaceIndex = pc; codeText[spaceIndex] != '\0' &&  codeText[spaceIndex] != ' ' && codeText[spaceIndex] != '\n';++spaceIndex);
+		//no opcode exceeds 6 characters in length
 		if (spaceIndex - pc > 6) {
 			printf("Error: unrecognized opcode at position %d\n",pc);
 			pc = spaceIndex;
 		}
 		else {
+			//get the current opcode and check that its valid
 			char opcode[7];
 			*opcode = '\0';
 			strncat(opcode,codeText+pc,spaceIndex-pc);
@@ -414,6 +416,7 @@ void runSimulation() {
 				printf("Error: unrecognized opcode %s\n",opcode);
 				break;
 			}
+			//get the current arguments and check that they are valid and match opcode expected args
 			int nextPc = pc;
 			bool validArgs = opcodeParseArgs(&nextPc);
 			printf("args = %s, %s, %s",curOpcodeArg0,curOpcodeArg1,curOpcodeArg2);
@@ -421,8 +424,11 @@ void runSimulation() {
 				break;
 			}
 			else {
+				//run the command corresponding to the current opcode
 				switch(curOpcode) {
 					case ADDI:
+						//TODO: operate on int registers directly, not the GUI's int strings
+						sprintf(registers[registerStrToInt(curOpcodeArg0)],"%d",atoi(registers[registerStrToInt(curOpcodeArg1)])+atoi(curOpcodeArg2));
 						break;
 				}
 			}
