@@ -226,24 +226,6 @@ bool saveFileData() {
 }
 
 /**
- * check and resolve custom hotkeys
- * @param in: the current frame's input
- */
-void handleHotKeys(const struct nk_input *in) {
-	for (int i = 0; i < NK_KEY_MAX; ++i) {
-		if (i == NK_KEY_SAVE && nk_input_is_key_pressed(in, (enum nk_keys)i)) {
-			if (in->keyboard.keys[NK_KEY_SHIFT].down)
-				saveFileDataAs();
-			else
-				saveFileData();
-		}
-		else if (i == NK_KEY_OPEN && nk_input_is_key_pressed(in, (enum nk_keys)i)) {
-			loadFileData();
-		}
-	}
-}
-
-/**
  * set all registers to the value 0. This would not be guaranteed in practice, but should make fresh runs visually cleaner
  */
 void clearRegisters() {
@@ -495,6 +477,27 @@ void runSimulation() {
 
 	}
 	writeConsole("Run Completed\n");
+}
+
+/**
+ * check and resolve custom hotkeys
+ * @param in: the current frame's input
+ */
+void handleHotKeys(const struct nk_input *in) {
+	for (int i = 0; i < NK_KEY_MAX; ++i) {
+		if (i == NK_KEY_SAVE && nk_input_is_key_pressed(in, (enum nk_keys)i)) {
+			if (in->keyboard.keys[NK_KEY_SHIFT].down)
+				saveFileDataAs();
+			else
+				saveFileData();
+		}
+		else if (i == NK_KEY_OPEN && nk_input_is_key_pressed(in, (enum nk_keys)i)) {
+			loadFileData();
+		}
+		else if (i == NK_KEY_RUN && nk_input_is_key_pressed(in, (enum nk_keys)i)) {
+			runSimulation();
+		}
+	}
 }
 
 /**
