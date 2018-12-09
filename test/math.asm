@@ -1,0 +1,3 @@
+ADDI $S0, $S0, 2
+ADDI $S1, $S1, 3
+MULT $S1, $S2

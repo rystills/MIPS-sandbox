@@ -1,2 +1,2 @@
-full opcode list: http://alumni.cs.ucr.edu/~vladimir/cs161/mips.html
+full opcode list: http://www2.engr.arizona.edu/~ece369/Resources/spim/MIPSReference.pdf, http://alumni.cs.ucr.edu/~vladimir/cs161/mips.html
 emulator/simulator starter guide: http://fms.komkon.org/EMUL8/HOWTO.html
