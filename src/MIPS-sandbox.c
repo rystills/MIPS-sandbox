@@ -379,7 +379,7 @@ bool opcodeParseArgs(int *pc) {
 			//continue on to the next argument
 			curOpcodeStartLoc = curOpcodeEndLoc+1;
 		}
-		if (codeText[*pc] == '\0') {
+		if (codeText[*pc] == '\n' || codeText[*pc] == '\0') {
 			break;
 		}
 	}
@@ -426,9 +426,25 @@ void runSimulation() {
 			else {
 				//run the command corresponding to the current opcode
 				switch(curOpcode) {
+				//TODO: operate on int registers directly, not the GUI's int strings
+				//TODO: overflow vs no overflow (sign)
+					case ADD:
+						sprintf(registers[registerStrToInt(curOpcodeArg0)],"%d",atoi(registers[registerStrToInt(curOpcodeArg1)])+atoi(registers[registerStrToInt(curOpcodeArg2)]));
+						break;
 					case ADDI:
-						//TODO: operate on int registers directly, not the GUI's int strings
 						sprintf(registers[registerStrToInt(curOpcodeArg0)],"%d",atoi(registers[registerStrToInt(curOpcodeArg1)])+atoi(curOpcodeArg2));
+						break;
+					case ADDIU:
+						sprintf(registers[registerStrToInt(curOpcodeArg0)],"%d",atoi(registers[registerStrToInt(curOpcodeArg1)])+atoi(curOpcodeArg2));
+						break;
+					case ADDU:
+						sprintf(registers[registerStrToInt(curOpcodeArg0)],"%d",atoi(registers[registerStrToInt(curOpcodeArg1)])+atoi(registers[registerStrToInt(curOpcodeArg2)]));
+						break;
+					case AND:
+						sprintf(registers[registerStrToInt(curOpcodeArg0)],"%d",atoi(registers[registerStrToInt(curOpcodeArg1)])&atoi(registers[registerStrToInt(curOpcodeArg2)]));
+						break;
+					case ANDI:
+						sprintf(registers[registerStrToInt(curOpcodeArg0)],"%d",atoi(registers[registerStrToInt(curOpcodeArg1)])&atoi(registers[registerStrToInt(curOpcodeArg2)]));
 						break;
 				}
 			}
