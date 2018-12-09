@@ -263,7 +263,7 @@ int incrementPc(int pc) {
 	int startPc = pc;
 	for (++pc; pc != startPc; ++pc) {
 		//ignore whitespace
-		for(; codeText[pc] != '\0' && (codeText[pc] == ' ' || codeText[pc] == '\n'); ++pc);
+		for(; codeText[pc] != '\0' && (codeText[pc] == ',' || codeText[pc] == '\n'); ++pc);
 		if (codeText[pc] == '\0') {
 			return -1;
 		}
@@ -326,15 +326,10 @@ bool opcodeParseArgs(int *pc) {
 	int curOpcodeNum = -1;
 	int curOpcodeStartLoc;
 	int curOpcodeEndLoc;
-	int parsing = false;
 	for (;; ++*pc) {
-		if (codeText[*pc] == ' ' || codeText[*pc] == '\n' || codeText[*pc] == '\0') {
-			//navigate to the first argument
-			if (!parsing) {
-				parsing = true;
-				curOpcodeStartLoc  = *pc+1;
-				continue;
-			}
+		//navigate to the start of the current argument
+		for (;codeText[*pc] != '\0' && (codeText[*pc] == ' ' || codeText[*pc] == '\t');++*pc,curOpcodeStartLoc = *pc);
+		if (codeText[*pc] == ',' || codeText[*pc] == '\n' || codeText[*pc] == '\0') {
 			//get the start and end of the current argument, and make sure the argument length is within a reasonable bound
 			curOpcodeEndLoc = *pc;
 			if (++curOpcodeNum > 2) {
@@ -386,6 +381,14 @@ bool opcodeParseArgs(int *pc) {
 	return true;
 }
 
+/**find and return the location of the specified label, if found
+ * @param labelName: the name of the label to find
+ * @returns the location in codeText of labelName, or -1 if not foundd
+ */
+int findLabel(char* labelName) {
+	//TODO: stub
+}
+
 /**
  * execute the simulation on the current file. This is a slow temporary solution that iterates through code lines
  */
@@ -398,8 +401,9 @@ void runSimulation() {
 	for(;;) {
 		pc = incrementPc(pc);
 		if (pc == -1) break;
+		//get the current opcode length
 		int spaceIndex;
-		for (spaceIndex = pc; codeText[spaceIndex] != '\0' &&  codeText[spaceIndex] != ' ' && codeText[spaceIndex] != '\n';++spaceIndex);
+		for (spaceIndex = pc; codeText[spaceIndex] != '\0' && codeText[spaceIndex] != ' ' && codeText[spaceIndex] != '\n';++spaceIndex);
 		//no opcode exceeds 6 characters in length
 		if (spaceIndex - pc > 6) {
 			printf("Error: unrecognized opcode at position %d\n",pc);
@@ -417,7 +421,7 @@ void runSimulation() {
 				break;
 			}
 			//get the current arguments and check that they are valid and match opcode expected args
-			int nextPc = pc;
+			int nextPc = spaceIndex;
 			bool validArgs = opcodeParseArgs(&nextPc);
 			printf("args = %s, %s, %s",curOpcodeArg0,curOpcodeArg1,curOpcodeArg2);
 			if (!validArgs) {
@@ -445,6 +449,12 @@ void runSimulation() {
 						break;
 					case ANDI:
 						sprintf(registers[registerStrToInt(curOpcodeArg0)],"%d",atoi(registers[registerStrToInt(curOpcodeArg1)])&atoi(registers[registerStrToInt(curOpcodeArg2)]));
+						break;
+					case BEQ:
+						//TODO: allow branch offset in addition to label
+						if (strcmp(registers[registerStrToInt(curOpcodeArg0)],registers[registerStrToInt(curOpcodeArg1)]) == 0) {
+							pc = findLabel(curOpcodeArg2);
+						}
 						break;
 				}
 			}
