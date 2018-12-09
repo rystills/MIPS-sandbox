@@ -386,7 +386,8 @@ bool opcodeParseArgs(int *pc) {
  * @returns the location in codeText of labelName, or -1 if not foundd
  */
 int findLabel(char* labelName) {
-	//TODO: stub
+	char* substr = strstr(codeText,labelName);
+	return substr == NULL? -1 : substr - codeText;
 }
 
 /**
@@ -406,7 +407,11 @@ void runSimulation() {
 		for (spaceIndex = pc; codeText[spaceIndex] != '\0' && codeText[spaceIndex] != ' ' && codeText[spaceIndex] != '\n';++spaceIndex);
 		//no opcode exceeds 6 characters in length
 		if (spaceIndex - pc > 6) {
-			printf("Error: unrecognized opcode at position %d\n",pc);
+			//ignore labels
+			//TODO: disallow malformed labels
+			if (codeText[spaceIndex-1] != ':') {
+				printf("Error: unrecognized opcode at position %d\n",pc);
+			}
 			pc = spaceIndex;
 		}
 		else {
@@ -423,7 +428,7 @@ void runSimulation() {
 			//get the current arguments and check that they are valid and match opcode expected args
 			int nextPc = spaceIndex;
 			bool validArgs = opcodeParseArgs(&nextPc);
-			printf("args = %s, %s, %s",curOpcodeArg0,curOpcodeArg1,curOpcodeArg2);
+			printf("args = %s, %s, %s\n",curOpcodeArg0,curOpcodeArg1,curOpcodeArg2);
 			if (!validArgs) {
 				break;
 			}
@@ -453,7 +458,7 @@ void runSimulation() {
 					case BEQ:
 						//TODO: allow branch offset in addition to label
 						if (strcmp(registers[registerStrToInt(curOpcodeArg0)],registers[registerStrToInt(curOpcodeArg1)]) == 0) {
-							pc = findLabel(curOpcodeArg2);
+							nextPc = findLabel(curOpcodeArg2);
 						}
 						break;
 				}

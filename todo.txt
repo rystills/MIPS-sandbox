@@ -14,7 +14,7 @@ desired features:
 -toggle register edit modes (int, hex, ...)
 -main menu button hover indicators
 -horizontal scrollbar for code window
--copy/paste (see nuklear.h line 22794)
+-copy/paste (copy actually appears to work, but paste does not. See nuklear.h line 22794)
 -undo/redo (see nuklear.h line 4160)
 -enter newline should also tab to the current line indentation level
 -line numbers in code edit window
