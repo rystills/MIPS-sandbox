@@ -1,3 +1,6 @@
+#ifndef _OPCODE_GUARD
+#define _OPCODE_GUARD
+
 #define NUMOPCODES 50
 
 enum argTypes {
@@ -166,3 +169,4 @@ const int opcodeArgs[NUMOPCODES][3] = {
 	{REGISTER,NONE,NONE}, //MTLO
 	{INTEGER,NONE,NONE} //TRAP
 };
+#endif

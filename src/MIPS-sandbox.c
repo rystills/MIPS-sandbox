@@ -368,8 +368,11 @@ bool opcodeParseArgs(int *pc) {
  * @returns the location in codeText of labelName, or -1 if not foundd
  */
 int findLabel(char* labelName) {
-	char* substr = strstr(codeText,labelName);
-	return substr == NULL? -1 : substr - codeText;
+	char fullLabel[100];
+	sprintf(fullLabel,"%s:",labelName);
+	printf("finding label %s\n",fullLabel);
+	char* substr = strstr(codeText,fullLabel);
+	return substr == NULL? -1 : substr - codeText-1;
 }
 
 /**
@@ -394,6 +397,9 @@ void runSimulation() {
 			if (codeText[spaceIndex-1] != ':') {
 				printf("Error: unrecognized opcode at position %d\n",pc);
 			}
+			else {
+				printf("Ignoring label at position %d\n",pc);
+			}
 			pc = spaceIndex;
 		}
 		else {
@@ -404,75 +410,98 @@ void runSimulation() {
 			printf("pc = %d opcode = %s\n",pc,opcode);
 			curOpcode = opcodeStrToInt(opcode);
 			if (curOpcode == -1) {
-				printf("Error: unrecognized opcode %s\n",opcode);
-				break;
-			}
-			//get the current arguments and check that they are valid and match opcode expected args
-			int nextPc = spaceIndex;
-			bool validArgs = opcodeParseArgs(&nextPc);
-			printf("args = %s, %s, %s\n",curOpcodeArg0,curOpcodeArg1,curOpcodeArg2);
-			if (!validArgs) {
-				break;
+				//ignore labels
+				//TODO: disallow malformed labels
+				if (codeText[spaceIndex-1] != ':') {
+					printf("Error: unrecognized opcode %s\n",opcode);
+				}
+				else {
+					printf("Ignoring label %s\n",opcode);
+				}
+				pc = spaceIndex;
 			}
 			else {
-				//run the command corresponding to the current opcode
-				switch(curOpcode) {
-				//TODO: operate on int registers directly, not the GUI's int strings
-				//arithmetic and logic
-				//TODO: overflow vs no overflow (sign)
-				case ADD:
-					sprintf(registers[registerStrToInt(curOpcodeArg0)],"%d",atoi(registers[registerStrToInt(curOpcodeArg1)])+atoi(registers[registerStrToInt(curOpcodeArg2)]));
-					break;
-				case ADDU:
-					sprintf(registers[registerStrToInt(curOpcodeArg0)],"%d",atoi(registers[registerStrToInt(curOpcodeArg1)])+atoi(registers[registerStrToInt(curOpcodeArg2)]));
-					break;
-				case ADDI:
-					sprintf(registers[registerStrToInt(curOpcodeArg0)],"%d",atoi(registers[registerStrToInt(curOpcodeArg1)])+atoi(curOpcodeArg2));
-					break;
-				case ADDIU:
-					sprintf(registers[registerStrToInt(curOpcodeArg0)],"%d",atoi(registers[registerStrToInt(curOpcodeArg1)])+atoi(curOpcodeArg2));
-					break;
-				case AND:
-					sprintf(registers[registerStrToInt(curOpcodeArg0)],"%d",atoi(registers[registerStrToInt(curOpcodeArg1)])&atoi(registers[registerStrToInt(curOpcodeArg2)]));
-					break;
-				case ANDI:
-					sprintf(registers[registerStrToInt(curOpcodeArg0)],"%d",atoi(registers[registerStrToInt(curOpcodeArg1)])&atoi(registers[registerStrToInt(curOpcodeArg2)]));
-					break;
-				//TODO: div, mul -> require mfhi & mflo
-				case NOR:
-					sprintf(registers[registerStrToInt(curOpcodeArg0)],"%d",~(atoi(registers[registerStrToInt(curOpcodeArg1)])|atoi(registers[registerStrToInt(curOpcodeArg2)])));
-					break;
-				case OR:
-					sprintf(registers[registerStrToInt(curOpcodeArg0)],"%d",atoi(registers[registerStrToInt(curOpcodeArg1)])|atoi(registers[registerStrToInt(curOpcodeArg2)]));
-					break;
-				case ORI:
-					sprintf(registers[registerStrToInt(curOpcodeArg0)],"%d",atoi(registers[registerStrToInt(curOpcodeArg1)])|atoi(curOpcodeArg2));
-					break;
-				//branching
-				//TODO: allow branch offset in addition to label
-				case BEQ:
-					if (strcmp(registers[registerStrToInt(curOpcodeArg0)],registers[registerStrToInt(curOpcodeArg1)]) == 0) {
-						nextPc = findLabel(curOpcodeArg2);
-					}
-					break;
-				case BGTZ:
-					if (atoi(registers[registerStrToInt(curOpcodeArg0)]) > 0) {
-						nextPc = findLabel(curOpcodeArg2);
-					}
-					break;
-				case BLEZ:
-					if (atoi(registers[registerStrToInt(curOpcodeArg0)]) <= 0) {
-						nextPc = findLabel(curOpcodeArg2);
-					}
-					break;
-				case BNE:
-					if (strcmp(registers[registerStrToInt(curOpcodeArg0)],registers[registerStrToInt(curOpcodeArg1)]) != 0) {
-						nextPc = findLabel(curOpcodeArg2);
-					}
+				//get the current arguments and check that they are valid and match opcode expected args
+				int nextPc = spaceIndex;
+				bool validArgs = opcodeParseArgs(&nextPc);
+				printf("args = %s, %s, %s\n",curOpcodeArg0,curOpcodeArg1,curOpcodeArg2);
+				if (!validArgs) {
 					break;
 				}
+				else {
+					//run the command corresponding to the current opcode
+					switch(curOpcode) {
+					//TODO: operate on int registers directly, not the GUI's int strings
+					//arithmetic and logic
+					//TODO: overflow vs no overflow (sign)
+					case ADD:
+						sprintf(registers[registerStrToInt(curOpcodeArg0)],"%d",atoi(registers[registerStrToInt(curOpcodeArg1)])+atoi(registers[registerStrToInt(curOpcodeArg2)]));
+						break;
+					case ADDU:
+						sprintf(registers[registerStrToInt(curOpcodeArg0)],"%d",atoi(registers[registerStrToInt(curOpcodeArg1)])+atoi(registers[registerStrToInt(curOpcodeArg2)]));
+						break;
+					case ADDI:
+						sprintf(registers[registerStrToInt(curOpcodeArg0)],"%d",atoi(registers[registerStrToInt(curOpcodeArg1)])+atoi(curOpcodeArg2));
+						break;
+					case ADDIU:
+						sprintf(registers[registerStrToInt(curOpcodeArg0)],"%d",atoi(registers[registerStrToInt(curOpcodeArg1)])+atoi(curOpcodeArg2));
+						break;
+					case AND:
+						sprintf(registers[registerStrToInt(curOpcodeArg0)],"%d",atoi(registers[registerStrToInt(curOpcodeArg1)])&atoi(registers[registerStrToInt(curOpcodeArg2)]));
+						break;
+					case ANDI:
+						sprintf(registers[registerStrToInt(curOpcodeArg0)],"%d",atoi(registers[registerStrToInt(curOpcodeArg1)])&atoi(registers[registerStrToInt(curOpcodeArg2)]));
+						break;
+					//TODO: div, mul -> require mfhi & mflo
+					case NOR:
+						sprintf(registers[registerStrToInt(curOpcodeArg0)],"%d",~(atoi(registers[registerStrToInt(curOpcodeArg1)])|atoi(registers[registerStrToInt(curOpcodeArg2)])));
+						break;
+					case OR:
+						sprintf(registers[registerStrToInt(curOpcodeArg0)],"%d",atoi(registers[registerStrToInt(curOpcodeArg1)])|atoi(registers[registerStrToInt(curOpcodeArg2)]));
+						break;
+					case ORI:
+						sprintf(registers[registerStrToInt(curOpcodeArg0)],"%d",atoi(registers[registerStrToInt(curOpcodeArg1)])|atoi(curOpcodeArg2));
+						break;
+					//branching
+					//TODO: allow branch offset in addition to label
+					case BEQ:
+						if (strcmp(registers[registerStrToInt(curOpcodeArg0)],registers[registerStrToInt(curOpcodeArg1)]) == 0) {
+							nextPc = findLabel(curOpcodeArg2);
+						}
+						break;
+					case BGTZ:
+						if (atoi(registers[registerStrToInt(curOpcodeArg0)]) > 0) {
+							nextPc = findLabel(curOpcodeArg2);
+						}
+						break;
+					case BLEZ:
+						if (atoi(registers[registerStrToInt(curOpcodeArg0)]) <= 0) {
+							nextPc = findLabel(curOpcodeArg2);
+						}
+						break;
+					case BNE:
+						if (strcmp(registers[registerStrToInt(curOpcodeArg0)],registers[registerStrToInt(curOpcodeArg1)]) != 0) {
+							nextPc = findLabel(curOpcodeArg2);
+						}
+						break;
+					case J:
+						nextPc = findLabel(curOpcodeArg0);
+						break;
+					case JAL:
+						sprintf(registers[31],"%d",pc);
+						nextPc = findLabel(curOpcodeArg0);
+						break;
+					case JALR:
+						sprintf(registers[31],"%d",pc);
+						nextPc = atoi(registers[registerStrToInt(curOpcodeArg0)]);
+						break;
+					case JR:
+						nextPc = atoi(registers[registerStrToInt(curOpcodeArg0)]);
+						break;
+					}
+				}
+				pc = nextPc;
 			}
-			pc = nextPc;
 		}
 
 	}
