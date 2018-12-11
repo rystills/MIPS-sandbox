@@ -446,6 +446,12 @@ void runSimulation() {
 					case ADDIU:
 						sprintf(registers[registerStrToInt(curOpcodeArg0)],"%d",atoi(registers[registerStrToInt(curOpcodeArg1)])+atoi(curOpcodeArg2));
 						break;
+					case SUB:
+						sprintf(registers[registerStrToInt(curOpcodeArg0)],"%d",atoi(registers[registerStrToInt(curOpcodeArg1)])-atoi(registers[registerStrToInt(curOpcodeArg2)]));
+						break;
+					case SUBU:
+						sprintf(registers[registerStrToInt(curOpcodeArg0)],"%d",atoi(registers[registerStrToInt(curOpcodeArg1)])-atoi(registers[registerStrToInt(curOpcodeArg2)]));
+						break;
 					case AND:
 						sprintf(registers[registerStrToInt(curOpcodeArg0)],"%d",atoi(registers[registerStrToInt(curOpcodeArg1)])&atoi(registers[registerStrToInt(curOpcodeArg2)]));
 						break;
@@ -484,6 +490,7 @@ void runSimulation() {
 							nextPc = findLabel(curOpcodeArg2);
 						}
 						break;
+					//jumping
 					case J:
 						nextPc = findLabel(curOpcodeArg0);
 						break;
