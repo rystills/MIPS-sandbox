@@ -39,7 +39,7 @@ extern int screenWidth;
 extern int screenHeight;
 
 bool loadedFile = false;
-static int check = nk_false;
+static int shouldZeroRegistersOnRun = nk_false;
 //signed 32 bit max val = 2,147,483,647, or 10 digits; need 3 additional digits for optional - sign and \0
 char registers[NUMREGISTERS][REGISTERLEN];
 
@@ -228,7 +228,7 @@ bool saveFileData() {
 /**
  * set all registers to the value 0. This would not be guaranteed in practice, but should make fresh runs visually cleaner
  */
-void clearRegisters() {
+void zeroRegisters() {
 	for (int i = 1; i < NUMREGISTERS; ++i) {
 		registers[i][0] = '0';
 		registers[i][1] = '\0';
@@ -379,7 +379,9 @@ int findLabel(char* labelName) {
  * execute the simulation on the current file. This is a slow temporary solution that iterates through code lines
  */
 void runSimulation() {
-	clearRegisters();
+	if (shouldZeroRegistersOnRun) {
+		zeroRegisters();
+	}
 
 	writeConsole("Beginning Run\n");
 	//init program counter pc
@@ -569,27 +571,27 @@ void mainLoop(void* nkcPointer){
     	nk_menubar_begin(ctx);
 		nk_layout_row_begin(ctx, NK_STATIC, 25, 5);
 		nk_layout_row_push(ctx, 45);
-		if (nk_menu_begin_label(ctx, "File", NK_TEXT_LEFT, nk_vec2(120, 125))) {
+		if (nk_menu_begin_label(ctx, "File", NK_TEXT_LEFT, nk_vec2(205, 125))) {
 			menubarOpenMenuBounds = nk_window_get_bounds(ctx);
 			nk_layout_row_dynamic(ctx, 25, 1);
-			if (nk_menu_item_label(ctx, "Save", NK_TEXT_LEFT))
+			if (nk_menu_item_label(ctx, "Save                 Ctrl+S", NK_TEXT_LEFT))
 				saveFileData();
-			if (nk_menu_item_label(ctx, "Save As", NK_TEXT_LEFT))
+			if (nk_menu_item_label(ctx, "Save As        Ctrl+Shift+S", NK_TEXT_LEFT))
 				saveFileDataAs();
-			if (nk_menu_item_label(ctx, "Load", NK_TEXT_LEFT)) {
+			if (nk_menu_item_label(ctx, "Open                 Ctrl+O", NK_TEXT_LEFT)) {
 				loadFileData();
 			}
-			if (nk_menu_item_label(ctx, "Run", NK_TEXT_LEFT)) {
+			if (nk_menu_item_label(ctx, "Run                  Ctrl+R", NK_TEXT_LEFT)) {
 				runSimulation();
 			}
 			nk_menu_end(ctx);
 		}
 
 		nk_layout_row_push(ctx, 170);
-		if (nk_menu_begin_label(ctx, "Options", NK_TEXT_LEFT, nk_vec2(120, 35))) {
+		if (nk_menu_begin_label(ctx, "Options", NK_TEXT_LEFT, nk_vec2(205, 35))) {
 			menubarOpenMenuBounds = nk_window_get_bounds(ctx);
 			nk_layout_row_dynamic(ctx, 25, 1);
-			nk_checkbox_label(ctx, "some tickbox", &check);
+			nk_checkbox_label(ctx, "Zero Registers On Run", &shouldZeroRegistersOnRun);
 			nk_menu_end(ctx);
 		}
 
@@ -665,6 +667,7 @@ int main(){
 	#endif
 	registers[0][0] = '0';
 	registers[0][1] = '\0';
+	zeroRegisters();
 	curFileName[0]='\0';
 
     struct nkc nkcx;
