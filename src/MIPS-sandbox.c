@@ -365,7 +365,7 @@ bool opcodeParseArgs(int *pc) {
 
 /**find and return the location of the specified label, if found
  * @param labelName: the name of the label to find
- * @returns the location in codeText of labelName, or -1 if not foundd
+ * @returns the location in codeText of labelName, or -1 if not found
  */
 int findLabel(char* labelName) {
 	char fullLabel[100];
