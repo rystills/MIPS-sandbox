@@ -40,6 +40,10 @@ extern int screenHeight;
 
 bool loadedFile = false;
 static int shouldZeroRegistersOnRun = nk_false;
+static int singleStepMode = nk_false;
+static int singleStepCompleted = nk_true;
+int pc=-1; //simulation program counter
+
 //signed 32 bit max val = 2,147,483,647, or 10 digits; need 3 additional digits for optional - sign and \0
 char registers[NUMREGISTERS][REGISTERLEN];
 
@@ -379,13 +383,18 @@ int findLabel(char* labelName) {
  * execute the simulation on the current file. This is a slow temporary solution that iterates through code lines
  */
 void runSimulation() {
-	if (shouldZeroRegistersOnRun) {
-		zeroRegisters();
-	}
+	if ((!singleStepMode) || singleStepCompleted) {
+		//initialization
+		if (shouldZeroRegistersOnRun) {
+			zeroRegisters();
+		}
+		singleStepCompleted = nk_false;
+		//init program counter pc
+		pc=-1;
 
-	writeConsole("Beginning Run\n");
-	//init program counter pc
-	int pc=-1;
+		writeConsole("Beginning Run\n");
+
+	}
 	for(;;) {
 		pc = incrementPc(pc);
 		if (pc == -1) break;
@@ -512,8 +521,9 @@ void runSimulation() {
 				pc = nextPc;
 			}
 		}
-
+		if (singleStepMode) return;
 	}
+	singleStepCompleted = nk_true;
 	writeConsole("Run Completed\n");
 }
 
@@ -588,10 +598,11 @@ void mainLoop(void* nkcPointer){
 		}
 
 		nk_layout_row_push(ctx, 170);
-		if (nk_menu_begin_label(ctx, "Options", NK_TEXT_LEFT, nk_vec2(205, 35))) {
+		if (nk_menu_begin_label(ctx, "Options", NK_TEXT_LEFT, nk_vec2(205, 65))) {
 			menubarOpenMenuBounds = nk_window_get_bounds(ctx);
 			nk_layout_row_dynamic(ctx, 25, 1);
 			nk_checkbox_label(ctx, "Zero Registers On Run", &shouldZeroRegistersOnRun);
+			nk_checkbox_label(ctx, "Single Step Mode", &singleStepMode);
 			nk_menu_end(ctx);
 		}
 
