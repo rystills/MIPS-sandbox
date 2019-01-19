@@ -656,6 +656,15 @@ void mainLoop(void* nkcPointer){
     	char cursorPosStr[100];
     	sprintf(cursorPosStr,"%d:%d",1+lineCountTo(ctx->current->edit.cursor),lineCharCount(ctx->current->edit.cursor));
     	nk_label(ctx,cursorPosStr,NK_TEXT_LEFT);
+
+    	//single step line indicator
+    	if (singleStepMode && !singleStepCompleted) {
+    		int ix = 220+5;
+    		int iy = curHeight+12 + 18*lineCountTo(codeText[pc] == '\n' ? pc+1 : pc);
+    		nk_fill_triangle(&ctx->current->buffer, ix,iy,ix,iy+10,ix+10,iy+5, nk_red);
+    	}
+
+
     	nk_end(ctx);
     }
     curHeight += screenHeight-curHeight-200+19;
