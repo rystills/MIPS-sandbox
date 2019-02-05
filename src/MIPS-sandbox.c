@@ -412,6 +412,7 @@ void runSimulation() {
 				printf("Ignoring label at position %d\n",pc);
 			}
 			pc = spaceIndex;
+			continue;
 		}
 		else {
 			//get the current opcode and check that its valid
@@ -430,6 +431,7 @@ void runSimulation() {
 					printf("Ignoring label %s\n",opcode);
 				}
 				pc = spaceIndex;
+				continue;
 			}
 			else {
 				//get the current arguments and check that they are valid and match opcode expected args
@@ -521,6 +523,7 @@ void runSimulation() {
 				pc = nextPc;
 			}
 		}
+		if (codeText[pc] == '\0') break;
 		if (singleStepMode) return;
 	}
 	singleStepCompleted = nk_true;
@@ -666,8 +669,6 @@ void mainLoop(void* nkcPointer){
     		int maxY = screenHeight-curHeight-200+19 - triangleHeight;
     		nk_fill_triangle(&ctx->current->buffer, ix,min(max(iy,minY),maxY),ix,min(max(iy+triangleHeight,minY),maxY),ix+triangleWidth,min(max(iy+triangleHeight/2,minY),maxY), nk_red);
     	}
-
-
     	nk_end(ctx);
     }
     curHeight += screenHeight-curHeight-200+19;
