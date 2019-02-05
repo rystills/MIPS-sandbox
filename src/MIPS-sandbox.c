@@ -659,9 +659,12 @@ void mainLoop(void* nkcPointer){
 
     	//single step line indicator
     	if (singleStepMode && !singleStepCompleted) {
+    		int triangleWidth = 10, triangleHeight = 10;
     		int ix = 220+5;
-    		int iy = curHeight+12 + 18*lineCountTo(codeText[pc] == '\n' ? pc+1 : pc);
-    		nk_fill_triangle(&ctx->current->buffer, ix,iy,ix,iy+10,ix+10,iy+5, nk_red);
+    		int iy = curHeight+12 + 18*lineCountTo(codeText[pc] == '\n' ? pc+1 : pc) - ctx->current->edit.scrollbar.y;
+    		int minY = curHeight + triangleHeight + 1;
+    		int maxY = screenHeight-curHeight-200+19 - triangleHeight;
+    		nk_fill_triangle(&ctx->current->buffer, ix,min(max(iy,minY),maxY),ix,min(max(iy+triangleHeight,minY),maxY),ix+triangleWidth,min(max(iy+triangleHeight/2,minY),maxY), nk_red);
     	}
 
 
