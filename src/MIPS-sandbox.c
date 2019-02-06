@@ -683,20 +683,38 @@ void mainLoop(void* nkcPointer){
 	nkc_render((struct nkc*)nkcPointer, nk_rgb(60,60,60) );
 }
 
+/**
+ * load settings from the config file settings.cfg, creating the file if not present
+ */
+void loadConfig() {
+	FILE *file;
+	if((file = fopen("settings.cfg","r"))==NULL) {
+		// config file does not exist; create it and populate it with default values
+		file = fopen("config.txt","a+");
+		fprintf(file, "resolution: %d %d\n", 1280,720);
+		fprintf(file, "zero registers on run: 1\n");
+		rewind(file);
+	}
+	fscanf(file,"%*s%d %d\n %*s%*s%*s%*s%d",&screenWidth, &screenHeight, &shouldZeroRegistersOnRun);
+	fclose(file);
+}
+
 int main(){
 	// manual vbuf for output flushing on windows to fix Eclipse failing to display output
 	#ifdef _WIN32
 		setvbuf(stdout, NULL, _IONBF, 0);
 		setvbuf(stderr, NULL, _IONBF, 0);
 	#endif
+
+	// load preferences from settings file
+	loadConfig();
+
 	registers[0][0] = '0';
 	registers[0][1] = '\0';
 	zeroRegisters();
 	curFileName[0]='\0';
 
     struct nkc nkcx;
-    screenWidth = 1280;
-    screenHeight = 720;
     if( nkc_init(&nkcx, "MIPS Simulator", screenWidth,screenHeight, NKC_WIN_NORMAL) ) {
     	// load font
     	struct nk_user_font *font = nkc_load_font_file(&nkcx, "ProggyClean.ttf", fontSize,0);
