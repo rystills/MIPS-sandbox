@@ -690,9 +690,8 @@ void loadConfig() {
 	FILE *file;
 	if((file = fopen("settings.cfg","r"))==NULL) {
 		// config file does not exist; create it and populate it with default values
-		file = fopen("config.txt","a+");
-		fprintf(file, "resolution: %d %d\n", 1280,720);
-		fprintf(file, "zero registers on run: 1\n");
+		file = fopen("settings.cfg","a+");
+		fprintf(file, "resolution: %d %d\nzero registers on run: 1\n", 1280,720);
 		rewind(file);
 	}
 	fscanf(file,"%*s%d %d\n %*s%*s%*s%*s%d",&screenWidth, &screenHeight, &shouldZeroRegistersOnRun);

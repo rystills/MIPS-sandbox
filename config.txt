@@ -1,2 +1,0 @@
-resolution: 1280 720
-zero registers on run: 1
