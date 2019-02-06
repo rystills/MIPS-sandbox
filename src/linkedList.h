@@ -70,22 +70,22 @@ remove a node from the specified linkedList
 @param node: the node to remove
 */
 void ll_remove(struct linkedList* list, struct node* node) {
-	//standard case: node is somewhere in the middle, so update prev->next and next->prev and move on
+	// standard case: node is somewhere in the middle, so update prev->next and next->prev and move on
 	if (node != list->tail && node != list->head) {
 		node->prev->next = node->next;
 		node->next->prev = node->prev;
 	}
-	//special case: node is the only one, so head and tail should both be set to NULL
+	// special case: node is the only one, so head and tail should both be set to NULL
 	else if (node == list->head && node == list->tail) {
 		list->head = list->tail = NULL;
 	}
-	//special case: node is the head, buth others exist. update next->prev
+	// special case: node is the head, buth others exist. update next->prev
 	else if (node == list->head) {
 		node->next->prev = NULL;
 		list->head = node->next;
 	}
 
-	//special case: node is the tail, but others exist. update prev->next
+	// special case: node is the tail, but others exist. update prev->next
 	else if (node == list->tail) {
 		node->prev->next = NULL;
 		list->tail = node->prev;

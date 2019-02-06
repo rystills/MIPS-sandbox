@@ -5,14 +5,14 @@
 
 #define NOC_FILE_DIALOG_IMPLEMENTATION
 #ifdef _WIN32
-//tweak the formatting for windows
+// tweak the formatting for windows
 #define fontSize 19
 #define fontPaddingExtra 0
 #define NOC_FILE_DIALOG_WIN32
 #else
-//platform independent case independent string comparison
+// platform independent case independent string comparison
 #define stricmp strcasecmp
-//tweak the formatting for non-windows
+// tweak the formatting for non-windows
 #define fontSize 13
 #define fontPaddingExtra 3
 #endif
@@ -28,7 +28,7 @@
 #endif
 #include "../noc/noc_file_dialog.h"
 #include <stdio.h>
-//inttypes allows us to guarantee n-bit ints
+// inttypes allows us to guarantee n-bit ints
 #include <inttypes.h>
 #include <stdbool.h>
 #include "registers.h"
@@ -42,12 +42,12 @@ bool loadedFile = false;
 static int shouldZeroRegistersOnRun = nk_false;
 static int singleStepMode = nk_false;
 static int singleStepCompleted = nk_true;
-int pc=-1; //simulation program counter
+int pc=-1;  // simulation program counter
 
-//signed 32 bit max val = 2,147,483,647, or 10 digits; need 3 additional digits for optional - sign and \0
+// signed 32 bit max val = 2,147,483,647, or 10 digits; need 3 additional digits for optional - sign and \0
 char registers[NUMREGISTERS][REGISTERLEN];
 
-//for now, use a fixed size code window
+// for now, use a fixed size code window
 #define NUMCODECHARS 999
 char codeText[NUMCODECHARS];
 char codeTextPrev[NUMCODECHARS];
@@ -169,7 +169,7 @@ bool loadFileData() {
 		  free(fileData);
 		  exitError("Error: unable to read all data from input file");
 	}
-	//copy file data into code text buffer, stripping windows \r's as we go
+	// copy file data into code text buffer, stripping windows \r's as we go
 	memset(codeText,'\0',sizeof(codeText));
 	int charsCopied = 0;
 	const char delim[2] = "\r";
@@ -198,7 +198,7 @@ bool saveFileDataAs() {
 	if (ret == NULL) {
 		return false;
 	}
-	//selected file; save to it
+	// selected file; save to it
 	strcpy(curFileName, ret);
 	if (strcmp(curFileName+strlen(curFileName)-4,".asm")!=0) {
 		strcat(curFileName,".asm");
@@ -215,11 +215,11 @@ bool saveFileData() {
 	if (curFileName[0] == '\0') {
 		return saveFileDataAs();
 	}
-	//disallow saving unchanged file unless its empty
+	// disallow saving unchanged file unless its empty
 	if (strlen(codeText) > 0 && strcmp(codeText,codeTextPrev)==0) {
 		return false;
 	}
-	//we are working on an existing file, so save to it
+	// we are working on an existing file, so save to it
 	FILE *fp = fopen(curFileName, "w");
 	if (!fp)
 		exitError("Error: unable to open input file");
@@ -244,16 +244,16 @@ void zeroRegisters() {
  * @returns: updated location of program counter
  */
 int incrementPc(int pc) {
-	//exit on empty code or initial value of null terminator
+	// exit on empty code or initial value of null terminator
 	if (codeText[0] == '\0' || (pc != -1 && codeText[pc] == '\0')) return -1;
 	int startPc = pc;
 	for (++pc; pc != startPc; ++pc) {
-		//ignore whitespace
+		// ignore whitespace
 		for(; codeText[pc] != '\0' && (codeText[pc] == ',' || codeText[pc] == '\n'); ++pc);
 		if (codeText[pc] == '\0') {
 			return -1;
 		}
-		//ignore comment lines
+		// ignore comment lines
 		if (codeText[pc] == '#') {
 			for(; codeText[pc] != '\0' && codeText[pc] != '\n'; ++pc);
 			if (codeText[pc] == '\0') {
@@ -313,10 +313,10 @@ bool opcodeParseArgs(int *pc) {
 	int curOpcodeStartLoc;
 	int curOpcodeEndLoc;
 	for (;; ++*pc) {
-		//navigate to the start of the current argument
+		// navigate to the start of the current argument
 		for (;codeText[*pc] != '\0' && (codeText[*pc] == ' ' || codeText[*pc] == '\t');++*pc,curOpcodeStartLoc = *pc);
 		if (codeText[*pc] == ',' || codeText[*pc] == '\n' || codeText[*pc] == '\0') {
-			//get the start and end of the current argument, and make sure the argument length is within a reasonable bound
+			// get the start and end of the current argument, and make sure the argument length is within a reasonable bound
 			curOpcodeEndLoc = *pc;
 			if (++curOpcodeNum > 2) {
 				printf("Error: too many args detected\n");
@@ -330,7 +330,7 @@ bool opcodeParseArgs(int *pc) {
 			memset(&curOpcodeStr[0], 0, sizeof(curOpcodeStr));
 
 			strncpy(curOpcodeStr,codeText+curOpcodeStartLoc,curOpcodeEndLoc-curOpcodeStartLoc);
-			//check the current argument against our opcode's arglist
+			// check the current argument against our opcode's arglist
 			printf("current opcode string? %s\n",curOpcodeStr);
 			switch(opcodeArgs[curOpcode][curOpcodeNum]) {
 				case REGISTER:
@@ -345,19 +345,19 @@ bool opcodeParseArgs(int *pc) {
 					}
 					break;
 				case LABEL:
-					//TODO: fill me out
+					// TODO: fill me out
 					break;
 				case OFFSET:
-					//TODO: fill me out
+					// TODO: fill me out
 					break;
 				case NONE:
-					//TODO: fill me out
+					// TODO: fill me out
 					break;
 			}
 			if (curOpcodeNum == 0) strcpy(curOpcodeArg0,curOpcodeStr);
 			else if (curOpcodeNum == 1) strcpy(curOpcodeArg1,curOpcodeStr);
 			else strcpy(curOpcodeArg2,curOpcodeStr);
-			//continue on to the next argument
+			// continue on to the next argument
 			curOpcodeStartLoc = curOpcodeEndLoc+1;
 		}
 		if (codeText[*pc] == '\n' || codeText[*pc] == '\0') {
@@ -384,12 +384,12 @@ int findLabel(char* labelName) {
  */
 void runSimulation() {
 	if ((!singleStepMode) || singleStepCompleted) {
-		//initialization
+		// initialization
 		if (shouldZeroRegistersOnRun) {
 			zeroRegisters();
 		}
 		singleStepCompleted = nk_false;
-		//init program counter pc
+		// init program counter pc
 		pc=-1;
 
 		writeConsole("Beginning Run\n");
@@ -398,13 +398,13 @@ void runSimulation() {
 	for(;;) {
 		pc = incrementPc(pc);
 		if (pc == -1) break;
-		//get the current opcode length
+		// get the current opcode length
 		int spaceIndex;
 		for (spaceIndex = pc; codeText[spaceIndex] != '\0' && codeText[spaceIndex] != ' ' && codeText[spaceIndex] != '\n';++spaceIndex);
-		//no opcode exceeds 6 characters in length
+		// no opcode exceeds 6 characters in length
 		if (spaceIndex - pc > 6) {
-			//ignore labels
-			//TODO: disallow malformed labels
+			// ignore labels
+			// TODO: disallow malformed labels
 			if (codeText[spaceIndex-1] != ':') {
 				printf("Error: unrecognized opcode at position %d\n",pc);
 			}
@@ -415,15 +415,15 @@ void runSimulation() {
 			continue;
 		}
 		else {
-			//get the current opcode and check that its valid
+			// get the current opcode and check that its valid
 			char opcode[7];
 			*opcode = '\0';
 			strncat(opcode,codeText+pc,spaceIndex-pc);
 			printf("pc = %d opcode = %s\n",pc,opcode);
 			curOpcode = opcodeStrToInt(opcode);
 			if (curOpcode == -1) {
-				//ignore labels
-				//TODO: disallow malformed labels
+				// ignore labels
+				// TODO: disallow malformed labels
 				if (codeText[spaceIndex-1] != ':') {
 					printf("Error: unrecognized opcode %s\n",opcode);
 				}
@@ -434,7 +434,7 @@ void runSimulation() {
 				continue;
 			}
 			else {
-				//get the current arguments and check that they are valid and match opcode expected args
+				// get the current arguments and check that they are valid and match opcode expected args
 				int nextPc = spaceIndex;
 				bool validArgs = opcodeParseArgs(&nextPc);
 				printf("args = %s, %s, %s\n",curOpcodeArg0,curOpcodeArg1,curOpcodeArg2);
@@ -442,11 +442,11 @@ void runSimulation() {
 					break;
 				}
 				else {
-					//run the command corresponding to the current opcode
+					// run the command corresponding to the current opcode
 					switch(curOpcode) {
-					//TODO: operate on int registers directly, not the GUI's int strings
-					//arithmetic and logic
-					//TODO: overflow vs no overflow (sign)
+					// TODO: operate on int registers directly, not the GUI's int strings
+					// arithmetic and logic
+					// TODO: overflow vs no overflow (sign)
 					case ADD:
 						sprintf(registers[registerStrToInt(curOpcodeArg0)],"%d",atoi(registers[registerStrToInt(curOpcodeArg1)])+atoi(registers[registerStrToInt(curOpcodeArg2)]));
 						break;
@@ -471,7 +471,7 @@ void runSimulation() {
 					case ANDI:
 						sprintf(registers[registerStrToInt(curOpcodeArg0)],"%d",atoi(registers[registerStrToInt(curOpcodeArg1)])&atoi(registers[registerStrToInt(curOpcodeArg2)]));
 						break;
-					//TODO: div, mul -> require mfhi & mflo
+					// TODO: div, mul -> require mfhi & mflo
 					case NOR:
 						sprintf(registers[registerStrToInt(curOpcodeArg0)],"%d",~(atoi(registers[registerStrToInt(curOpcodeArg1)])|atoi(registers[registerStrToInt(curOpcodeArg2)])));
 						break;
@@ -481,8 +481,8 @@ void runSimulation() {
 					case ORI:
 						sprintf(registers[registerStrToInt(curOpcodeArg0)],"%d",atoi(registers[registerStrToInt(curOpcodeArg1)])|atoi(curOpcodeArg2));
 						break;
-					//branching
-					//TODO: allow branch offset in addition to label
+					// branching
+					// TODO: allow branch offset in addition to label
 					case BEQ:
 						if (strcmp(registers[registerStrToInt(curOpcodeArg0)],registers[registerStrToInt(curOpcodeArg1)]) == 0) {
 							nextPc = findLabel(curOpcodeArg2);
@@ -503,7 +503,7 @@ void runSimulation() {
 							nextPc = findLabel(curOpcodeArg2);
 						}
 						break;
-					//jumping
+					// jumping
 					case J:
 						nextPc = findLabel(curOpcodeArg0);
 						break;
@@ -558,25 +558,25 @@ void handleHotKeys(const struct nk_input *in) {
 void mainLoop(void* nkcPointer){
     struct nk_context *ctx = ((struct nkc*)nkcPointer)->ctx;
 
-    //reusable vars
+    // reusable vars
     struct nk_rect bounds;
     struct nk_rect menubarBounds;
     struct nk_rect menubarOpenMenuBounds = menubarBounds;
     const struct nk_input *in = &ctx->input;
     int curHeight = 0;
 
-    //poll events
+    // poll events
     union nkc_event e = nkc_poll_events((struct nkc*)nkcPointer);
     if( (e.type == NKC_EWINDOW) && (e.window.param == NKC_EQUIT) )
         nkc_stop_main_loop((struct nkc*)nkcPointer);
 
-    //hotkeys
+    // hotkeys
     handleHotKeys(in);
 
-    //layout constants
-    int textEditWindowPaddingSize = 22; //number of pixels needed to prevent an unneeded scrollbar from forming in a textedit window
+    // layout constants
+    int textEditWindowPaddingSize = 22;  // number of pixels needed to prevent an unneeded scrollbar from forming in a textedit window
 
-    //menubar window
+    // menubar window
     int menubarHeight = 30 + fontPaddingExtra;
     int window_flags = 0;
     if (nk_begin(ctx, "mainMenu", nk_rect(0,curHeight,screenWidth,menubarHeight), window_flags)) {
@@ -610,7 +610,7 @@ void mainLoop(void* nkcPointer){
 		}
 
 		nk_layout_row_push(ctx, screenWidth-45-170-40);
-		//add an asterisk to fileName when the file contents have been modified
+		// add an asterisk to fileName when the file contents have been modified
 		modifiedFileName[0] = strcmp(codeText,codeTextPrev)==0 ? '\0' : '*';
 		modifiedFileName[1]='\0';
 		strcat(modifiedFileName,curFileName);
@@ -619,7 +619,7 @@ void mainLoop(void* nkcPointer){
 		nk_end(ctx);
     }
     curHeight += menubarHeight;
-    //register window
+    // register window
     window_flags = NK_WINDOW_BORDER | NK_WINDOW_BACKGROUND;
     if (nk_begin(ctx, "registers", nk_rect(0,curHeight,220,screenHeight - curHeight), window_flags)) {
     	nk_layout_row_dynamic(ctx, 25, 2);
@@ -628,15 +628,15 @@ void mainLoop(void* nkcPointer){
     	for (int i = 0; i < NUMREGISTERS; ++i) {
 			nk_layout_row_dynamic(ctx, 25, 2);
 			checkSetInvalidRegisterContents(i,ctx);
-			//tooltip
+			// tooltip
 			bounds = nk_widget_bounds(ctx);
 			if (nk_input_is_mouse_hovering_rect(in, bounds) && !(nk_input_is_mouse_hovering_rect(in,menubarOpenMenuBounds) || nk_input_is_mouse_hovering_rect(in, menubarBounds))) {
 				nk_tooltip(ctx,registerTips[i]);
 			}
 			nk_label(ctx, registerNames[i], NK_TEXT_LEFT);
-			//for edit modes, see https://github.com/vurtun/nuklear/blob/181cfd86c47ae83eceabaf4e640587b844e613b6/src/nuklear.h#L3132
+			// for edit modes, see https:// github.com/vurtun/nuklear/blob/181cfd86c47ae83eceabaf4e640587b844e613b6/src/nuklear.h#L3132
 			nk_edit_string_zero_terminated(ctx, NK_EDIT_FIELD | NK_EDIT_READ_ONLY *(i==0), registers[i], sizeof(registers[i]), nk_filter_decimal);
-			//keep the cursor from passing the end of the register field (purely serves as a graphical improvement)
+			// keep the cursor from passing the end of the register field (purely serves as a graphical improvement)
 			if (ctx->current->edit.cursor > REGISTERLEN-1)
 				ctx->current->edit.cursor = REGISTERLEN-1;
 			clearRegisterStyle(ctx);
@@ -644,23 +644,23 @@ void mainLoop(void* nkcPointer){
     	nk_end(ctx);
     }
 
-    //code edit window
+    // code edit window
     window_flags = NK_WINDOW_BORDER;
     if (nk_begin(ctx, "code", nk_rect(220,curHeight,screenWidth-220,screenHeight-curHeight-200+19), window_flags)) {
     	if (loadedFile) {
-    		//reset selection on file load to avoid potential out of bounds errors
+    		// reset selection on file load to avoid potential out of bounds errors
     		ctx->current->edit.sel_start = ctx->current->edit.sel_end = 0;
     		loadedFile = false;
     	}
     	nk_layout_row_dynamic(ctx, screenHeight-curHeight-200-textEditWindowPaddingSize, 1);
     	nk_edit_string_zero_terminated(ctx, NK_EDIT_BOX, codeText, sizeof(codeText), nk_filter_default);
-    	//show line and char number
+    	// show line and char number
     	nk_layout_row_dynamic(ctx, 15, 2);
     	char cursorPosStr[100];
     	sprintf(cursorPosStr,"%d:%d",1+lineCountTo(ctx->current->edit.cursor),lineCharCount(ctx->current->edit.cursor));
     	nk_label(ctx,cursorPosStr,NK_TEXT_LEFT);
 
-    	//single step line indicator
+    	// single step line indicator
     	if (singleStepMode && !singleStepCompleted) {
     		int triangleWidth = 10, triangleHeight = 10;
     		int ix = 220+5;
@@ -673,7 +673,7 @@ void mainLoop(void* nkcPointer){
     }
     curHeight += screenHeight-curHeight-200+19;
 
-    //console window
+    // console window
     if (nk_begin(ctx, "console", nk_rect(220,curHeight,screenWidth-220,200-19), window_flags)) {
 		nk_layout_row_dynamic(ctx, 200-19-textEditWindowPaddingSize, 1);
 		nk_edit_string_zero_terminated(ctx, NK_EDIT_SELECTABLE | NK_EDIT_MULTILINE | NK_EDIT_CLIPBOARD, consoleText, sizeof(consoleText), nk_filter_default);
@@ -684,7 +684,7 @@ void mainLoop(void* nkcPointer){
 }
 
 int main(){
-	//manual vbuf for output flushing on windows to fix Eclipse failing to display output
+	// manual vbuf for output flushing on windows to fix Eclipse failing to display output
 	#ifdef _WIN32
 		setvbuf(stdout, NULL, _IONBF, 0);
 		setvbuf(stderr, NULL, _IONBF, 0);
@@ -698,7 +698,7 @@ int main(){
     screenWidth = 1280;
     screenHeight = 720;
     if( nkc_init(&nkcx, "MIPS Simulator", screenWidth,screenHeight, NKC_WIN_NORMAL) ) {
-    	//load font
+    	// load font
     	struct nk_user_font *font = nkc_load_font_file(&nkcx, "ProggyClean.ttf", fontSize,0);
     	nkcx.ctx->style.font = font;
     	nkc_set_main_loop(&nkcx, mainLoop,(void*)&nkcx);
