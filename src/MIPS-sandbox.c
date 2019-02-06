@@ -684,6 +684,17 @@ void mainLoop(void* nkcPointer){
 }
 
 /**
+ * write settings to the config file settings.cfg, optionally using an already created file pointer if provided
+ * @param ifp: input file pointer to write to, or NULL (if provided, the pointer will be rewinded after writing but not closed)
+ */
+void writeConfig(FILE *ifp) {
+	FILE *file = (ifp == NULL ? fopen("settings.cfg","w") : ifp);
+	fprintf(file, "resolution: %d %d\nzero registers on run: 1\n", 1280,720);
+	rewind(file);
+	if (ifp == NULL) fclose(file);
+}
+
+/**
  * load settings from the config file settings.cfg, creating the file if not present
  */
 void loadConfig() {
@@ -691,8 +702,7 @@ void loadConfig() {
 	if((file = fopen("settings.cfg","r"))==NULL) {
 		// config file does not exist; create it and populate it with default values
 		file = fopen("settings.cfg","a+");
-		fprintf(file, "resolution: %d %d\nzero registers on run: 1\n", 1280,720);
-		rewind(file);
+		writeConfig(file);
 	}
 	fscanf(file,"%*s%d %d\n %*s%*s%*s%*s%d",&screenWidth, &screenHeight, &shouldZeroRegistersOnRun);
 	fclose(file);
