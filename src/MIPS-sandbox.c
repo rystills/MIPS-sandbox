@@ -78,10 +78,9 @@ bool stringIsNumber(char* str,int len) {
  * @param ifp: input file pointer to write to, or NULL (if provided, the pointer will be rewinded after writing but not closed)
  */
 void writeConfig(FILE *ifp) {
-	FILE *file = (ifp == NULL ? fopen("settings.cfg","w") : ifp);
+	FILE *file = fopen("settings.cfg","w");
 	fprintf(file, "resolution: %d %d\nzero registers on run: %d\n", screenWidth,screenHeight,shouldZeroRegistersOnRun);
-	rewind(file);
-	if (ifp == NULL) fclose(file);
+	fclose(file);
 }
 
 /**
@@ -91,10 +90,9 @@ void loadConfig() {
 	FILE *file;
 	if((file = fopen("settings.cfg","r"))==NULL) {
 		// config file does not exist; create it and populate it with default values
-		file = fopen("settings.cfg","a+");
-		// if we don't have a config file, give screen width and screen height their default values of 1280x720
 		screenWidth = 1280, screenHeight = 720;
 		writeConfig(file);
+		return;
 	}
 	fscanf(file,"%*s%d %d\n %*s%*s%*s%*s%d",&screenWidth, &screenHeight, &shouldZeroRegistersOnRun);
 	fclose(file);
