@@ -74,6 +74,33 @@ bool stringIsNumber(char* str,int len) {
 }
 
 /**
+ * write settings to the config file settings.cfg, optionally using an already created file pointer if provided
+ * @param ifp: input file pointer to write to, or NULL (if provided, the pointer will be rewinded after writing but not closed)
+ */
+void writeConfig(FILE *ifp) {
+	FILE *file = (ifp == NULL ? fopen("settings.cfg","w") : ifp);
+	fprintf(file, "resolution: %d %d\nzero registers on run: %d\n", screenWidth,screenHeight,shouldZeroRegistersOnRun);
+	rewind(file);
+	if (ifp == NULL) fclose(file);
+}
+
+/**
+ * load settings from the config file settings.cfg, creating the file if not present
+ */
+void loadConfig() {
+	FILE *file;
+	if((file = fopen("settings.cfg","r"))==NULL) {
+		// config file does not exist; create it and populate it with default values
+		file = fopen("settings.cfg","a+");
+		// if we don't have a config file, give screen width and screen height their default values of 1280x720
+		screenWidth = 1280, screenHeight = 720;
+		writeConfig(file);
+	}
+	fscanf(file,"%*s%d %d\n %*s%*s%*s%*s%d",&screenWidth, &screenHeight, &shouldZeroRegistersOnRun);
+	fclose(file);
+}
+
+/**
  * check if the specified register contents are invalid; if so, set register style to force red highlight
  * @param regNum: the register number to check
  * @param ctx: the current nuklear context
@@ -584,7 +611,7 @@ void mainLoop(void* nkcPointer){
     	nk_menubar_begin(ctx);
 		nk_layout_row_begin(ctx, NK_STATIC, 25, 5);
 		nk_layout_row_push(ctx, 45);
-		if (nk_menu_begin_label(ctx, "File", NK_TEXT_LEFT, nk_vec2(205, 125))) {
+		if (nk_menu_begin_label(ctx, "File", NK_TEXT_LEFT, nk_vec2(205, 155))) {
 			menubarOpenMenuBounds = nk_window_get_bounds(ctx);
 			nk_layout_row_dynamic(ctx, 25, 1);
 			if (nk_menu_item_label(ctx, "Save                 Ctrl+S", NK_TEXT_LEFT))
@@ -596,6 +623,9 @@ void mainLoop(void* nkcPointer){
 			}
 			if (nk_menu_item_label(ctx, "Run                  Ctrl+R", NK_TEXT_LEFT)) {
 				runSimulation();
+			}
+			if (nk_menu_item_label(ctx, "Save Preferences", NK_TEXT_LEFT)) {
+				writeConfig(NULL);
 			}
 			nk_menu_end(ctx);
 		}
@@ -681,31 +711,6 @@ void mainLoop(void* nkcPointer){
 	}
 
 	nkc_render((struct nkc*)nkcPointer, nk_rgb(60,60,60) );
-}
-
-/**
- * write settings to the config file settings.cfg, optionally using an already created file pointer if provided
- * @param ifp: input file pointer to write to, or NULL (if provided, the pointer will be rewinded after writing but not closed)
- */
-void writeConfig(FILE *ifp) {
-	FILE *file = (ifp == NULL ? fopen("settings.cfg","w") : ifp);
-	fprintf(file, "resolution: %d %d\nzero registers on run: 1\n", 1280,720);
-	rewind(file);
-	if (ifp == NULL) fclose(file);
-}
-
-/**
- * load settings from the config file settings.cfg, creating the file if not present
- */
-void loadConfig() {
-	FILE *file;
-	if((file = fopen("settings.cfg","r"))==NULL) {
-		// config file does not exist; create it and populate it with default values
-		file = fopen("settings.cfg","a+");
-		writeConfig(file);
-	}
-	fscanf(file,"%*s%d %d\n %*s%*s%*s%*s%d",&screenWidth, &screenHeight, &shouldZeroRegistersOnRun);
-	fclose(file);
 }
 
 int main(){
