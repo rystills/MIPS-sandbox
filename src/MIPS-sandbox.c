@@ -570,7 +570,10 @@ void handleHotKeys(const struct nk_input *in) {
 		else if (i == NK_KEY_OPEN && nk_input_is_key_pressed(in, (enum nk_keys)i)) {
 			loadFileData();
 		}
-		else if (i == NK_KEY_RUN && nk_input_is_key_pressed(in, (enum nk_keys)i)) {
+		else if (i == NK_KEY_RUN && nk_input_is_key_pressed(in, (enum nk_keys)i) && !(singleStepMode && !singleStepCompleted)) {
+			runSimulation();
+		}
+		else if (i == NK_KEY_CTRL_DOWN && nk_input_is_key_pressed(in, (enum nk_keys)i) && singleStepMode && !singleStepCompleted) {
 			runSimulation();
 		}
 	}
