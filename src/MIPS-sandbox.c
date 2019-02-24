@@ -47,6 +47,12 @@ int pc=-1;  // simulation program counter
 // signed 32 bit max val = 2,147,483,647, or 10 digits; need 3 additional digits for optional - sign and \0
 char registers[NUMREGISTERS][REGISTERLEN];
 
+// pre-allocated register copies, for reverse single stepping
+#define MAXSTEPCOPIES 100
+char registerCopies[MAXSTEPCOPIES][NUMREGISTERS][REGISTERLEN];
+int pcCopies[MAXSTEPCOPIES];
+int curStepCopy = 0;
+
 // for now, use a fixed size code window
 #define NUMCODECHARS 999
 char codeText[NUMCODECHARS];
@@ -405,6 +411,29 @@ int findLabel(char* labelName) {
 }
 
 /**
+ * copy register values from fromRegs to toRegs
+ * @param toRegs: the 2d array into which we wish to copy the registers
+ * @param fromRegs: the 2d array from which we wish to copy the registers
+ */
+void copyRegisters(char toRegs[][REGISTERLEN], char fromRegs[][REGISTERLEN]) {
+	for (int i = 0; i < NUMREGISTERS; ++i)
+		for (int r = 0; r < REGISTERLEN; ++r)
+			toRegs[i][r] = fromRegs[i][r];
+}
+
+/**
+ * move the simulation back one step in our our step copies, if possible
+ */
+void stepBack() {
+	// we can't step back if we don't have any steps in the copy array
+	if (curStepCopy > 0) {
+		--curStepCopy;
+		copyRegisters(registers, registerCopies[curStepCopy]);
+		pc = pcCopies[curStepCopy];
+	}
+}
+
+/**
  * execute the simulation on the current file. This is a slow temporary solution that iterates through code lines
  */
 void runSimulation() {
@@ -414,11 +443,20 @@ void runSimulation() {
 			zeroRegisters();
 		}
 		singleStepCompleted = nk_false;
+		curStepCopy = 0;
 		// init program counter pc
 		pc=-1;
 
 		writeConsole("Beginning Run\n");
 
+	}
+	if (singleStepMode) {
+		// copy register values
+		copyRegisters(registerCopies[curStepCopy], registers);
+		// copy pc position
+		pcCopies[curStepCopy] = pc;
+		//TODO: shift step array upon reaching MAXSTEPCOPIES, rather than wrapping around and losing all previous steps
+		curStepCopy = (curStepCopy == MAXSTEPCOPIES-1 ? 0 : curStepCopy+1);
 	}
 	for(;;) {
 		pc = incrementPc(pc);
@@ -549,7 +587,9 @@ void runSimulation() {
 			}
 		}
 		if (codeText[pc] == '\0') break;
-		if (singleStepMode) return;
+		if (singleStepMode) {
+			return;
+		}
 	}
 	singleStepCompleted = nk_true;
 	writeConsole("Run Completed\n");
@@ -572,6 +612,9 @@ void handleHotKeys(const struct nk_input *in) {
 		}
 		else if (i == NK_KEY_RUN && nk_input_is_key_pressed(in, (enum nk_keys)i) && !(singleStepMode && !singleStepCompleted)) {
 			runSimulation();
+		}
+		else if (i == NK_KEY_CTRL_UP && nk_input_is_key_pressed(in, (enum nk_keys)i) && singleStepMode && !singleStepCompleted) {
+			stepBack();
 		}
 		else if (i == NK_KEY_CTRL_DOWN && nk_input_is_key_pressed(in, (enum nk_keys)i) && singleStepMode && !singleStepCompleted) {
 			runSimulation();
