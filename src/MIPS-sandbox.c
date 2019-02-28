@@ -451,12 +451,24 @@ void runSimulation() {
 
 	}
 	if (singleStepMode) {
-		// copy register values
-		copyRegisters(registerCopies[curStepCopy], registers);
-		// copy pc position
-		pcCopies[curStepCopy] = pc;
-		//TODO: shift step array upon reaching MAXSTEPCOPIES, rather than wrapping around and losing all previous steps
-		curStepCopy = (curStepCopy == MAXSTEPCOPIES-1 ? 0 : curStepCopy+1);
+		// create step copy
+		if (curStepCopy < MAXSTEPCOPIES) {
+			// copy register values
+			copyRegisters(registerCopies[curStepCopy], registers);
+			// copy pc position
+			pcCopies[curStepCopy] = pc;
+			++curStepCopy;
+		}
+		else {
+			// shift copy arrays down one
+			for (int i = 0; i < MAXSTEPCOPIES-1; ++i) {
+				copyRegisters(registerCopies[i], registerCopies[i+1]);
+				pcCopies[i] = pcCopies[i+1];
+			}
+			// now push the new copies onto the end
+			copyRegisters(registerCopies[MAXSTEPCOPIES-1],registers);
+			pcCopies[MAXSTEPCOPIES-1] = pc;
+		}
 	}
 	for(;;) {
 		pc = incrementPc(pc);
