@@ -667,7 +667,7 @@ void mainLoop(void* nkcPointer){
     	nk_menubar_begin(ctx);
 		nk_layout_row_begin(ctx, NK_STATIC, 25, 5);
 		nk_layout_row_push(ctx, 45);
-		if (nk_menu_begin_label(ctx, "File", NK_TEXT_LEFT, nk_vec2(205, 155))) {
+		if (nk_menu_begin_label(ctx, "File", NK_TEXT_LEFT, nk_vec2(205, 125))) {
 			menubarOpenMenuBounds = nk_window_get_bounds(ctx);
 			nk_layout_row_dynamic(ctx, 25, 1);
 			if (nk_menu_item_label(ctx, "Save                 Ctrl+S", NK_TEXT_LEFT))
@@ -677,16 +677,13 @@ void mainLoop(void* nkcPointer){
 			if (nk_menu_item_label(ctx, "Open                 Ctrl+O", NK_TEXT_LEFT)) {
 				loadFileData();
 			}
-			if (nk_menu_item_label(ctx, "Run                  Ctrl+R", NK_TEXT_LEFT)) {
-				runSimulation();
-			}
 			if (nk_menu_item_label(ctx, "Save Preferences", NK_TEXT_LEFT)) {
 				writeConfig(NULL);
 			}
 			nk_menu_end(ctx);
 		}
 
-		nk_layout_row_push(ctx, 170);
+		nk_layout_row_push(ctx, 70);
 		if (nk_menu_begin_label(ctx, "Options", NK_TEXT_LEFT, nk_vec2(205, 65))) {
 			menubarOpenMenuBounds = nk_window_get_bounds(ctx);
 			nk_layout_row_dynamic(ctx, 25, 1);
@@ -695,7 +692,23 @@ void mainLoop(void* nkcPointer){
 			nk_menu_end(ctx);
 		}
 
-		nk_layout_row_push(ctx, screenWidth-45-170-40);
+		nk_layout_row_push(ctx, 100);
+		if (nk_menu_begin_label(ctx, "Run", NK_TEXT_LEFT, nk_vec2(205, 100))) {
+			menubarOpenMenuBounds = nk_window_get_bounds(ctx);
+			nk_layout_row_dynamic(ctx, 25, 1);
+			if (nk_menu_item_label(ctx, "Run                  Ctrl+R", NK_TEXT_LEFT)) {
+				runSimulation();
+			}
+			if (nk_menu_item_label(ctx, "Step Forward      Ctrl+Down", NK_TEXT_LEFT) && singleStepMode && !singleStepCompleted) {
+				runSimulation();
+			}
+			if (nk_menu_item_label(ctx, "Step Backward       Ctrl+Up", NK_TEXT_LEFT) && singleStepMode && !singleStepCompleted) {
+				stepBack();
+			}
+			nk_menu_end(ctx);
+		}
+
+		nk_layout_row_push(ctx, screenWidth-45-70-100-40);
 		// add an asterisk to fileName when the file contents have been modified
 		modifiedFileName[0] = strcmp(codeText,codeTextPrev)==0 ? '\0' : '*';
 		modifiedFileName[1]='\0';
