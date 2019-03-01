@@ -434,6 +434,14 @@ void stepBack() {
 }
 
 /**
+ * End the simulation execution. Has no effect outside of single step mode.
+ */
+void endSimulation() {
+	singleStepCompleted = nk_true;
+	writeConsole("Run Terminated Prematurely");
+}
+
+/**
  * execute the simulation on the current file. This is a slow temporary solution that iterates through code lines
  */
 void runSimulation() {
@@ -693,7 +701,7 @@ void mainLoop(void* nkcPointer){
 		}
 
 		nk_layout_row_push(ctx, 100);
-		if (nk_menu_begin_label(ctx, "Run", NK_TEXT_LEFT, nk_vec2(205, 100))) {
+		if (nk_menu_begin_label(ctx, "Run", NK_TEXT_LEFT, nk_vec2(205, 125))) {
 			menubarOpenMenuBounds = nk_window_get_bounds(ctx);
 			nk_layout_row_dynamic(ctx, 25, 1);
 			if (nk_menu_item_label(ctx, "Run                  Ctrl+R", NK_TEXT_LEFT)) {
@@ -704,6 +712,9 @@ void mainLoop(void* nkcPointer){
 			}
 			if (nk_menu_item_label(ctx, "Step Backward       Ctrl+Up", NK_TEXT_LEFT) && singleStepMode && !singleStepCompleted) {
 				stepBack();
+			}
+			if (nk_menu_item_label(ctx, "End Simulation", NK_TEXT_LEFT) && singleStepMode && !singleStepCompleted) {
+				endSimulation();
 			}
 			nk_menu_end(ctx);
 		}
