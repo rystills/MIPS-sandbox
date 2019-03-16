@@ -52,6 +52,10 @@ char registers[NUMREGISTERS][REGISTERLEN];
 char registerCopies[MAXSTEPCOPIES][NUMREGISTERS][REGISTERLEN];
 int pcCopies[MAXSTEPCOPIES];
 int curStepCopy = 0;
+// pre-allocated breakpoint line positions array
+#define MAXBREAKPOINTS 100
+int breakPointLocs[MAXBREAKPOINTS];
+int curBreakPointNum = 0;
 
 // for now, use a fixed size code window
 #define NUMCODECHARS 999
@@ -127,7 +131,7 @@ bool checkSetInvalidRegisterContents(int regNum, struct nk_context *ctx) {
  */
 int lineCountTo(int pos) {
 	int lines = 0;
-	for (int i = 0; i < pos; ++i)
+	for (int i = 0; i < pos && codeText[i] != '\0'; ++i)
 		if (codeText[i] == '\n') ++lines;
 	return lines;
 }
@@ -779,6 +783,39 @@ void mainLoop(void* nkcPointer){
     		int maxY = screenHeight-curHeight-200+19 - triangleHeight;
     		nk_fill_triangle(&ctx->current->buffer, ix,min(max(iy,minY),maxY),ix,min(max(iy+triangleHeight,minY),maxY),ix+triangleWidth,min(max(iy+triangleHeight/2,minY),maxY), nk_red);
     	}
+
+    	//TODO: account for scrollbar when updating and rendering breakpoints
+    	// update breakpoints
+    	int ix = 220+5;
+    	int iy = curHeight+12;
+    	for (int i = 0; i < lineCountTo(NUMCODECHARS)+1; ++i, iy += 18) {
+    		if (nk_input_is_mouse_released(in, 0)) {
+    			if (abs(in->mouse.pos.x - ix) <= 6 && abs(in->mouse.pos.y - iy) <= 6) {
+    				// TODO: handle > max breakpoints
+    				// check toggle breakpoint
+    				int found = 0;
+    				for (int r = 0; r < curBreakPointNum; ++r) {
+    					if (breakPointLocs[r] == i) {
+    						// remove found breakpoint
+    						found = 1;
+    						for (int k = r+1; k < curBreakPointNum; ++k)
+    							breakPointLocs[k-1] = breakPointLocs[k];
+    						--curBreakPointNum;
+    						break;
+    					}
+    				}
+    				if (!found)
+    					breakPointLocs[curBreakPointNum++] = i;
+    			}
+    		}
+    	}
+
+    	// render breakpoint indicators
+    	printf("%d\n",curBreakPointNum);
+    	for (int i = 0; i < curBreakPointNum; ++i) {
+    		nk_fill_circle(&ctx->current->buffer, nk_rect(220+5-6,curHeight+12+18*breakPointLocs[i]-6,12,12), nk_blue);
+    	}
+
     	nk_end(ctx);
     }
     curHeight += screenHeight-curHeight-200+19;
