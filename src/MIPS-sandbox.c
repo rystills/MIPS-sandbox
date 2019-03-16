@@ -485,6 +485,17 @@ void runSimulation() {
 	for(;;) {
 		pc = incrementPc(pc);
 		if (pc == -1) break;
+		// switch to single step mode and stop if a breakpoint is detected while in a normal run
+		if (!singleStepMode) {
+			int curLine = lineCountTo(pc);
+			for (int i = 0; i < curBreakPointNum; ++i) {
+				if (breakPointLocs[i] == curLine) {
+					singleStepMode = nk_true;
+					return;
+				}
+			}
+		}
+
 		// get the current opcode length
 		int spaceIndex;
 		for (spaceIndex = pc; codeText[spaceIndex] != '\0' && codeText[spaceIndex] != ' ' && codeText[spaceIndex] != '\n';++spaceIndex);
@@ -811,7 +822,6 @@ void mainLoop(void* nkcPointer){
     	}
 
     	// render breakpoint indicators
-    	printf("%d\n",curBreakPointNum);
     	for (int i = 0; i < curBreakPointNum; ++i) {
     		nk_fill_circle(&ctx->current->buffer, nk_rect(220+5-6,curHeight+12+18*breakPointLocs[i]-6,12,12), nk_blue);
     	}
