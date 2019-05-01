@@ -558,11 +558,11 @@ void runSimulation() {
 					switch(curOpcode) {
 					// TODO: operate on int registers directly, not the GUI's int strings
 					// arithmetic and logic
-					// TODO: overflow vs no overflow (sign)
 					case ADD:
 						sprintf(registers[registerStrToInt(curOpcodeArg0)],"%d",atoi(registers[registerStrToInt(curOpcodeArg1)])+atoi(registers[registerStrToInt(curOpcodeArg2)]));
 						break;
 					case ADDU:
+						// TODO: overflow vs no overflow (sign)
 						sprintf(registers[registerStrToInt(curOpcodeArg0)],"%d",atoi(registers[registerStrToInt(curOpcodeArg1)])+atoi(registers[registerStrToInt(curOpcodeArg2)]));
 						break;
 					case ADDI:
@@ -570,12 +570,6 @@ void runSimulation() {
 						break;
 					case ADDIU:
 						sprintf(registers[registerStrToInt(curOpcodeArg0)],"%d",atoi(registers[registerStrToInt(curOpcodeArg1)])+atoi(curOpcodeArg2));
-						break;
-					case SUB:
-						sprintf(registers[registerStrToInt(curOpcodeArg0)],"%d",atoi(registers[registerStrToInt(curOpcodeArg1)])-atoi(registers[registerStrToInt(curOpcodeArg2)]));
-						break;
-					case SUBU:
-						sprintf(registers[registerStrToInt(curOpcodeArg0)],"%d",atoi(registers[registerStrToInt(curOpcodeArg1)])-atoi(registers[registerStrToInt(curOpcodeArg2)]));
 						break;
 					case AND:
 						sprintf(registers[registerStrToInt(curOpcodeArg0)],"%d",atoi(registers[registerStrToInt(curOpcodeArg1)])&atoi(registers[registerStrToInt(curOpcodeArg2)]));
@@ -619,6 +613,31 @@ void runSimulation() {
 						break;
 					case ORI:
 						sprintf(registers[registerStrToInt(curOpcodeArg0)],"%d",atoi(registers[registerStrToInt(curOpcodeArg1)])|atoi(curOpcodeArg2));
+						break;
+					case SLL:
+						sprintf(registers[registerStrToInt(curOpcodeArg0)],"%d",atoi(registers[registerStrToInt(curOpcodeArg1)])<<atoi(curOpcodeArg2));
+						break;
+					case SLLV:
+						sprintf(registers[registerStrToInt(curOpcodeArg0)],"%d",atoi(registers[registerStrToInt(curOpcodeArg1)])<<atoi(registers[registerStrToInt(curOpcodeArg2)]));
+						break;
+					case SRA:
+						// TODO: arithmetic vs logical right shift
+						sprintf(registers[registerStrToInt(curOpcodeArg0)],"%d",atoi(registers[registerStrToInt(curOpcodeArg1)])>>atoi(curOpcodeArg2));
+						break;
+					case SRAV:
+						sprintf(registers[registerStrToInt(curOpcodeArg0)],"%d",atoi(registers[registerStrToInt(curOpcodeArg1)])<<atoi(registers[registerStrToInt(curOpcodeArg2)]));
+						break;
+					case SRL:
+						sprintf(registers[registerStrToInt(curOpcodeArg0)],"%d",atoi(registers[registerStrToInt(curOpcodeArg1)])>>atoi(curOpcodeArg2));
+						break;
+					case SRLV:
+						sprintf(registers[registerStrToInt(curOpcodeArg0)],"%d",atoi(registers[registerStrToInt(curOpcodeArg1)])<<atoi(registers[registerStrToInt(curOpcodeArg2)]));
+						break;
+					case SUB:
+						sprintf(registers[registerStrToInt(curOpcodeArg0)],"%d",atoi(registers[registerStrToInt(curOpcodeArg1)])-atoi(registers[registerStrToInt(curOpcodeArg2)]));
+						break;
+					case SUBU:
+						sprintf(registers[registerStrToInt(curOpcodeArg0)],"%d",atoi(registers[registerStrToInt(curOpcodeArg1)])-atoi(registers[registerStrToInt(curOpcodeArg2)]));
 						break;
 					// branching
 					// TODO: allow branch offset in addition to label
