@@ -31,6 +31,7 @@
 // inttypes allows us to guarantee n-bit ints
 #include <inttypes.h>
 #include <stdbool.h>
+#include <stdint.h>
 #include "registers.h"
 #include "opcodes.h"
 #include "linkedList.h"
@@ -582,7 +583,24 @@ void runSimulation() {
 					case ANDI:
 						sprintf(registers[registerStrToInt(curOpcodeArg0)],"%d",atoi(registers[registerStrToInt(curOpcodeArg1)])&atoi(registers[registerStrToInt(curOpcodeArg2)]));
 						break;
-					// TODO: div, mul -> require mfhi & mflo
+					case DIV:
+						sprintf(registers[registerStrToInt("$hi")], "%d",atoi(registers[registerStrToInt(curOpcodeArg0)]) % atoi(registers[registerStrToInt(curOpcodeArg1)]));
+						sprintf(registers[registerStrToInt("$lo")], "%d",atoi(registers[registerStrToInt(curOpcodeArg0)]) / atoi(registers[registerStrToInt(curOpcodeArg1)]));
+						break;
+					case DIVU:
+						sprintf(registers[registerStrToInt("$hi")], "%d",atoi(registers[registerStrToInt(curOpcodeArg0)]) % atoi(registers[registerStrToInt(curOpcodeArg1)]));
+						sprintf(registers[registerStrToInt("$lo")], "%d",atoi(registers[registerStrToInt(curOpcodeArg0)]) / atoi(registers[registerStrToInt(curOpcodeArg1)]));
+						break;
+					case MULT:
+						#define res (int64_t)atoi(registers[registerStrToInt(curOpcodeArg0)]) * (int64_t)atoi(registers[registerStrToInt(curOpcodeArg1)])
+						sprintf(registers[registerStrToInt("$hi")], "%d",(int32_t)(res >> 32));
+						sprintf(registers[registerStrToInt("$lo")], "%d",(int32_t)(res));
+						break;
+					case MULTU:
+						#define res (int64_t)atoi(registers[registerStrToInt(curOpcodeArg0)]) * (int64_t)atoi(registers[registerStrToInt(curOpcodeArg1)])
+						sprintf(registers[registerStrToInt("$hi")], "%d",(int32_t)(res >> 32));
+						sprintf(registers[registerStrToInt("$lo")], "%d",(int32_t)(res));
+						break;
 					case NOR:
 						sprintf(registers[registerStrToInt(curOpcodeArg0)],"%d",~(atoi(registers[registerStrToInt(curOpcodeArg1)])|atoi(registers[registerStrToInt(curOpcodeArg2)])));
 						break;

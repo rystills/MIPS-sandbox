@@ -1,11 +1,10 @@
 #ifndef _REGISTER_GUARD
 #define _REGISTER_GUARD
 
-#define NUMREGISTERS 32
+#define NUMREGISTERS 34
 #define REGISTERLEN 12
 
 enum registers {
-	$zero,
 	$at,
 	$v0,
 	$v1,
@@ -36,11 +35,13 @@ enum registers {
 	$gp,
 	$sp,
 	$fp,
-	$ra
+	$ra,
+	$hi,
+	$lo,
+	$zero
 };
 
 const char * registerNames [NUMREGISTERS] = {
-	"$zero",
 	"$at",
 	"$v0",
 	"$v1",
@@ -71,11 +72,13 @@ const char * registerNames [NUMREGISTERS] = {
 	"$gp",
 	"$sp",
 	"$fp",
-	"$ra"
+	"$ra",
+	"$hi",
+	"$lo",
+	"$zero"
 };
 
 const char * registerTips [NUMREGISTERS] = {
-	"register hard-coded to the value 0; unchangeable",
 	"register reserved for pseudo-instructions",
 	"return Value 0 from function call",
 	"return Value 1 from function call",
@@ -101,11 +104,14 @@ const char * registerTips [NUMREGISTERS] = {
 	"Saved storage register 7; preserved by subprograms",
 	"Temporary register 8; not preserved by subprograms",
 	"Temporary register 9; not preserved by subprograms",
-	"register 0 reserved for Kernel.",
-	"register 1 reserved for Kernel.",
+	"register 0 reserved for Kernel",
+	"register 1 reserved for Kernel",
 	"Global area Pointer; points to the middle of the 64k memory block. Useful for creating/referencing global variables",
 	"Stack Pointer; points to the top of the stack",
 	"Frame Pointer; points to the active frame of the stack",
-	"Return Address; stores the address of the next instruction to return to. Typically used on function termination"
+	"Return Address; stores the address of the next instruction to return to. Typically used on function termination",
+	"HI register; stores the 32 most significant bits resulting from multiplication / division calls",
+	"LO register; stores the 32 least significant bits resulting from multiplication / division calls",
+	"register hard-coded to the value 0; unchangeable"
 };
 #endif
