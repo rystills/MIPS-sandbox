@@ -645,6 +645,24 @@ void runSimulation() {
 					case XORI:
 						sprintf(registers[registerStrToInt(curOpcodeArg0)],"%d",atoi(registers[registerStrToInt(curOpcodeArg1)])^atoi(curOpcodeArg2));
 						break;
+					case LHI:
+						sprintf(registers[registerStrToInt(curOpcodeArg0)],"%d",atoi(registers[registerStrToInt(curOpcodeArg1)])<<16);
+						break;
+					case LLO:
+						sprintf(registers[registerStrToInt(curOpcodeArg0)],"%d",atoi(registers[registerStrToInt(curOpcodeArg1)])>>16);
+						break;
+					case SLT:
+						sprintf(registers[registerStrToInt(curOpcodeArg0)],"%d",atoi(registers[registerStrToInt(curOpcodeArg1)]) < atoi(registers[registerStrToInt(curOpcodeArg2)]));
+						break;
+					case SLTU:
+						sprintf(registers[registerStrToInt(curOpcodeArg0)],"%d",atoi(registers[registerStrToInt(curOpcodeArg1)]) < atoi(registers[registerStrToInt(curOpcodeArg2)]));
+						break;
+					case SLTI:
+						sprintf(registers[registerStrToInt(curOpcodeArg0)],"%d",atoi(registers[registerStrToInt(curOpcodeArg1)]) < atoi(curOpcodeArg2));
+						break;
+					case SLTIU:
+						sprintf(registers[registerStrToInt(curOpcodeArg0)],"%d",atoi(registers[registerStrToInt(curOpcodeArg1)]) < atoi(curOpcodeArg2));
+						break;
 					// branching
 					// TODO: allow branch offset in addition to label
 					case BEQ:
@@ -672,11 +690,11 @@ void runSimulation() {
 						nextPc = findLabel(curOpcodeArg0);
 						break;
 					case JAL:
-						sprintf(registers[31],"%d",pc);
+						sprintf(registers[registerStrToInt("$ra")],"%d",pc);
 						nextPc = findLabel(curOpcodeArg0);
 						break;
 					case JALR:
-						sprintf(registers[31],"%d",pc);
+						sprintf(registers[registerStrToInt("$ra")],"%d",pc);
 						nextPc = atoi(registers[registerStrToInt(curOpcodeArg0)]);
 						break;
 					case JR:
