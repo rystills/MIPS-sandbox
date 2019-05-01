@@ -84,6 +84,13 @@ bool stringIsNumber(char* str,int len) {
 }
 
 /**
+ * remove all breakpoints from the current code file
+ */
+void clearBreakpoints() {
+	curBreakPointNum = 0;
+}
+
+/**
  * write settings to the config file settings.cfg, optionally using an already created file pointer if provided
  * @param ifp: input file pointer to write to, or NULL (if provided, the pointer will be rewinded after writing but not closed)
  */
@@ -214,6 +221,9 @@ bool loadFileData() {
 		charsCopied += strlen(token);
 		token = strtok(NULL, delim);
 	}
+
+	// clear breakpoints
+	clearBreakpoints();
 
 	free(fileData);
 	strcpy(curFileName, ret);
@@ -719,7 +729,7 @@ void mainLoop(void* nkcPointer){
 		}
 
 		nk_layout_row_push(ctx, 100);
-		if (nk_menu_begin_label(ctx, "Run", NK_TEXT_LEFT, nk_vec2(205, 125))) {
+		if (nk_menu_begin_label(ctx, "Run", NK_TEXT_LEFT, nk_vec2(205, 150))) {
 			menubarOpenMenuBounds = nk_window_get_bounds(ctx);
 			nk_layout_row_dynamic(ctx, 25, 1);
 			if (nk_menu_item_label(ctx, "Run                  Ctrl+R", NK_TEXT_LEFT)) {
@@ -733,6 +743,9 @@ void mainLoop(void* nkcPointer){
 			}
 			if (nk_menu_item_label(ctx, "End Simulation", NK_TEXT_LEFT) && singleStepMode && !singleStepCompleted) {
 				endSimulation();
+			}
+			if (nk_menu_item_label(ctx, "Clear Breakpoints", NK_TEXT_LEFT)) {
+				clearBreakpoints();
 			}
 			nk_menu_end(ctx);
 		}
