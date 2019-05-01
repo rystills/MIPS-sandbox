@@ -795,24 +795,21 @@ void mainLoop(void* nkcPointer){
 				if (abs(in->mouse.pos.x - ix) <= circleRadius && abs(in->mouse.pos.y - iy) <= circleRadius) {
 					// TODO: handle > max breakpoints
 					// check toggle breakpoint
-					//TODO: found should be an nk bool, not an int
-					int found = 0;
 					for (int r = 0; r < curBreakPointNum; ++r) {
 						if (breakPointLocs[r] == i) {
-							// remove found breakpoint
-							found = 1;
+							// breakpoint found; remove it
 							for (int k = r+1; k < curBreakPointNum; ++k)
 								breakPointLocs[k-1] = breakPointLocs[k];
 							--curBreakPointNum;
-							break;
+							goto finishedBreakPointSearch;
 						}
 					}
-					if (!found)
-						breakPointLocs[curBreakPointNum++] = i;
+					// no breakpoint found; add it
+					breakPointLocs[curBreakPointNum++] = i;
 				}
 			}
 		}
-
+		finishedBreakPointSearch:
 		// render breakpoint indicators
 		for (int i = 0; i < curBreakPointNum; ++i) {
 			nk_fill_circle(&ctx->current->buffer, nk_rect(220+5-circleRadius,curHeight+12+circleRadius-1+18*breakPointLocs[i]-circleRadius,12,12), nk_green);

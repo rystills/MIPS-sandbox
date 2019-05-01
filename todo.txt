@@ -19,5 +19,4 @@ desired features:
 -store preferences (window dims, fullscreen?) in an external file
 -threaded simulation with shared memory for outputting to the GUI without affecting performance
 -replace exitError calls with warning messages and continuation when possible
--replace all bools with nk bools
 -center breakpoints (currently a bit higher than intended)
