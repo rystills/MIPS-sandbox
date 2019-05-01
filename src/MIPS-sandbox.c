@@ -817,8 +817,8 @@ void mainLoop(void* nkcPointer){
 		// render breakpoint indicators
 		for (int i = 0; i < curBreakPointNum; ++i) {
 			int cx = 230, cy = curHeight+12+triangleHeight - ctx->current->edit.scrollbar.y + 18*breakPointLocs[i];
-			nk_fill_triangle(&ctx->current->buffer, cx + triangleWidth, min(max(cy,minY),maxY), cx-triangleWidth, min(max(cy,minY),maxY), cx, min(max(cy - triangleHeight,minY),maxY), nk_green);
-			nk_fill_triangle(&ctx->current->buffer, cx + triangleWidth, min(max(cy,minY),maxY), cx-triangleWidth, min(max(cy,minY),maxY), cx, min(max(cy + triangleHeight,minY),maxY), nk_green);
+			nk_fill_triangle(&ctx->current->buffer, cx + triangleWidth, min(max(cy,minY),maxY), cx-triangleWidth, min(max(cy,minY),maxY), cx, min(max(cy - triangleHeight,minY),maxY), nk_red);
+			nk_fill_triangle(&ctx->current->buffer, cx + triangleWidth, min(max(cy,minY),maxY), cx-triangleWidth, min(max(cy,minY),maxY), cx, min(max(cy + triangleHeight,minY),maxY), nk_red);
 		}
 
     	// single step line indicator
@@ -828,7 +828,7 @@ void mainLoop(void* nkcPointer){
     		iy = curHeight+12 + 18*lineCountTo(codeText[pc] == '\n' ? pc+1 : pc) - ctx->current->edit.scrollbar.y;
     		minY = curHeight + triangleHeight + 1;
     		maxY = screenHeight-curHeight-200+19 - triangleHeight;
-    		nk_fill_triangle(&ctx->current->buffer, ix,min(max(iy,minY),maxY),ix,min(max(iy+triangleHeight,minY),maxY),ix+triangleWidth,min(max(iy+triangleHeight/2,minY),maxY), nk_red);
+    		nk_fill_triangle(&ctx->current->buffer, ix,min(max(iy,minY),maxY),ix,min(max(iy+triangleHeight,minY),maxY),ix+triangleWidth,min(max(iy+triangleHeight/2,minY),maxY), nk_green);
     	}
 
     	nk_end(ctx);
