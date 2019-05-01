@@ -639,6 +639,12 @@ void runSimulation() {
 					case SUBU:
 						sprintf(registers[registerStrToInt(curOpcodeArg0)],"%d",atoi(registers[registerStrToInt(curOpcodeArg1)])-atoi(registers[registerStrToInt(curOpcodeArg2)]));
 						break;
+					case XOR:
+						sprintf(registers[registerStrToInt(curOpcodeArg0)],"%d",atoi(registers[registerStrToInt(curOpcodeArg1)])^atoi(registers[registerStrToInt(curOpcodeArg2)]));
+						break;
+					case XORI:
+						sprintf(registers[registerStrToInt(curOpcodeArg0)],"%d",atoi(registers[registerStrToInt(curOpcodeArg1)])^atoi(curOpcodeArg2));
+						break;
 					// branching
 					// TODO: allow branch offset in addition to label
 					case BEQ:
