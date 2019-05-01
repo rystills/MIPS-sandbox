@@ -462,7 +462,7 @@ void runSimulation() {
 		writeConsole("Beginning Run\n");
 
 	}
-	if (singleStepMode || curBreakPointNum > 0) {
+	if (singleStepMode) {
 		// create step copy
 		if (curStepCopy < MAXSTEPCOPIES) {
 			// copy register values
@@ -491,6 +491,9 @@ void runSimulation() {
 			for (int i = 0; i < curBreakPointNum; ++i) {
 				if (breakPointLocs[i] == curLine) {
 					singleStepMode = nk_true;
+					//move pc to line start
+					--pc;
+					while (pc > 0 && codeText[pc] != '\n') --pc;
 					return;
 				}
 			}
