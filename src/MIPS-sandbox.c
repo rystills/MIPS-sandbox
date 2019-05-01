@@ -797,7 +797,6 @@ void mainLoop(void* nkcPointer){
 		for (int i = 0; i < lineCountTo(NUMCODECHARS)+1; ++i, iy += 18) {
 			if (nk_input_is_mouse_released(in, 0)) {
 				if (abs(in->mouse.pos.x - ix) <= triangleHeight && abs(in->mouse.pos.y - iy) <= triangleHeight) {
-					// TODO: handle > max breakpoints
 					// check toggle breakpoint
 					for (int r = 0; r < curBreakPointNum; ++r) {
 						if (breakPointLocs[r] == i) {
@@ -808,8 +807,9 @@ void mainLoop(void* nkcPointer){
 							goto finishedBreakPointSearch;
 						}
 					}
-					// no breakpoint found; add it
-					breakPointLocs[curBreakPointNum++] = i;
+					// no breakpoint found; add it if we haven't used up all our available breakpoints
+					if (curBreakPointNum < MAXBREAKPOINTS)
+						breakPointLocs[curBreakPointNum++] = i;
 				}
 			}
 		}
