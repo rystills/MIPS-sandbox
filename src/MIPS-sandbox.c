@@ -785,14 +785,15 @@ void mainLoop(void* nkcPointer){
     	sprintf(cursorPosStr,"%d:%d",1+lineCountTo(ctx->current->edit.cursor),lineCharCount(ctx->current->edit.cursor));
     	nk_label(ctx,cursorPosStr,NK_TEXT_LEFT);
 
-    	//TODO: account for scrollbar when updating and rendering breakpoints
 		// update breakpoints
-		int ix = 220+5;
-		int circleRadius = 6;
-		int iy = curHeight+12+circleRadius-1;
+		int ix = 230;
+		int triangleWidth = 5, triangleHeight = 5;
+		int minY = curHeight + triangleHeight + 6;
+		int maxY = screenHeight-curHeight-200+19 - triangleHeight - 5;
+		int iy = curHeight+12+triangleHeight - ctx->current->edit.scrollbar.y;
 		for (int i = 0; i < lineCountTo(NUMCODECHARS)+1; ++i, iy += 18) {
 			if (nk_input_is_mouse_released(in, 0)) {
-				if (abs(in->mouse.pos.x - ix) <= circleRadius && abs(in->mouse.pos.y - iy) <= circleRadius) {
+				if (abs(in->mouse.pos.x - ix) <= triangleHeight && abs(in->mouse.pos.y - iy) <= triangleHeight) {
 					// TODO: handle > max breakpoints
 					// check toggle breakpoint
 					for (int r = 0; r < curBreakPointNum; ++r) {
@@ -812,16 +813,18 @@ void mainLoop(void* nkcPointer){
 		finishedBreakPointSearch:
 		// render breakpoint indicators
 		for (int i = 0; i < curBreakPointNum; ++i) {
-			nk_fill_circle(&ctx->current->buffer, nk_rect(220+5-circleRadius,curHeight+12+circleRadius-1+18*breakPointLocs[i]-circleRadius,12,12), nk_green);
+			int cx = 230, cy = curHeight+12+triangleHeight - ctx->current->edit.scrollbar.y + 18*breakPointLocs[i];
+			nk_fill_triangle(&ctx->current->buffer, cx + triangleWidth, min(max(cy,minY),maxY), cx-triangleWidth, min(max(cy,minY),maxY), cx, min(max(cy - triangleHeight,minY),maxY), nk_green);
+			nk_fill_triangle(&ctx->current->buffer, cx + triangleWidth, min(max(cy,minY),maxY), cx-triangleWidth, min(max(cy,minY),maxY), cx, min(max(cy + triangleHeight,minY),maxY), nk_green);
 		}
 
     	// single step line indicator
     	if (singleStepMode && !singleStepCompleted) {
-    		int triangleWidth = 10, triangleHeight = 10;
-    		int ix = 220+5;
-    		int iy = curHeight+12 + 18*lineCountTo(codeText[pc] == '\n' ? pc+1 : pc) - ctx->current->edit.scrollbar.y;
-    		int minY = curHeight + triangleHeight + 1;
-    		int maxY = screenHeight-curHeight-200+19 - triangleHeight;
+    		triangleWidth = 10, triangleHeight = 10;
+    		ix = 220+5;
+    		iy = curHeight+12 + 18*lineCountTo(codeText[pc] == '\n' ? pc+1 : pc) - ctx->current->edit.scrollbar.y;
+    		minY = curHeight + triangleHeight + 1;
+    		maxY = screenHeight-curHeight-200+19 - triangleHeight;
     		nk_fill_triangle(&ctx->current->buffer, ix,min(max(iy,minY),maxY),ix,min(max(iy+triangleHeight,minY),maxY),ix+triangleWidth,min(max(iy+triangleHeight/2,minY),maxY), nk_red);
     	}
 

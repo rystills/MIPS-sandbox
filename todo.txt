@@ -16,7 +16,5 @@ desired features:
 -undo/redo (see nuklear.h line 4160)
 -enter newline should also tab to the current line indentation level
 -line numbers in code edit window
--store preferences (window dims, fullscreen?) in an external file
 -threaded simulation with shared memory for outputting to the GUI without affecting performance
 -replace exitError calls with warning messages and continuation when possible
--center breakpoints (currently a bit higher than intended)
