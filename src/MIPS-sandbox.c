@@ -584,23 +584,33 @@ void runSimulation() {
 						sprintf(registers[registerStrToInt(curOpcodeArg0)],"%d",atoi(registers[registerStrToInt(curOpcodeArg1)])&atoi(registers[registerStrToInt(curOpcodeArg2)]));
 						break;
 					case DIV:
-						sprintf(registers[registerStrToInt("$hi")], "%d",atoi(registers[registerStrToInt(curOpcodeArg0)]) % atoi(registers[registerStrToInt(curOpcodeArg1)]));
-						sprintf(registers[registerStrToInt("$lo")], "%d",atoi(registers[registerStrToInt(curOpcodeArg0)]) / atoi(registers[registerStrToInt(curOpcodeArg1)]));
+						// TODO: use trap execption for div by 0
+						if (atoi(registers[registerStrToInt(curOpcodeArg1)]) != 0) {
+							sprintf(registers[registerStrToInt("$hi")], "%d",atoi(registers[registerStrToInt(curOpcodeArg0)]) % atoi(registers[registerStrToInt(curOpcodeArg1)]));
+							sprintf(registers[registerStrToInt("$lo")], "%d",atoi(registers[registerStrToInt(curOpcodeArg0)]) / atoi(registers[registerStrToInt(curOpcodeArg1)]));
+						}
 						break;
 					case DIVU:
-						sprintf(registers[registerStrToInt("$hi")], "%d",atoi(registers[registerStrToInt(curOpcodeArg0)]) % atoi(registers[registerStrToInt(curOpcodeArg1)]));
-						sprintf(registers[registerStrToInt("$lo")], "%d",atoi(registers[registerStrToInt(curOpcodeArg0)]) / atoi(registers[registerStrToInt(curOpcodeArg1)]));
+						if (atoi(registers[registerStrToInt(curOpcodeArg1)]) != 0) {
+							sprintf(registers[registerStrToInt("$hi")], "%d",atoi(registers[registerStrToInt(curOpcodeArg0)]) % atoi(registers[registerStrToInt(curOpcodeArg1)]));
+							sprintf(registers[registerStrToInt("$lo")], "%d",atoi(registers[registerStrToInt(curOpcodeArg0)]) / atoi(registers[registerStrToInt(curOpcodeArg1)]));
+						}
 						break;
 					case MULT:
-						#define res (int64_t)atoi(registers[registerStrToInt(curOpcodeArg0)]) * (int64_t)atoi(registers[registerStrToInt(curOpcodeArg1)])
+						// TODO: test hi bits
+					{
+						int64_t res = (int64_t)atoi(registers[registerStrToInt(curOpcodeArg0)]) * (int64_t)atoi(registers[registerStrToInt(curOpcodeArg1)]);
 						sprintf(registers[registerStrToInt("$hi")], "%d",(int32_t)(res >> 32));
 						sprintf(registers[registerStrToInt("$lo")], "%d",(int32_t)(res));
 						break;
+					}
 					case MULTU:
-						#define res (int64_t)atoi(registers[registerStrToInt(curOpcodeArg0)]) * (int64_t)atoi(registers[registerStrToInt(curOpcodeArg1)])
+					{
+						int64_t res = (int64_t)atoi(registers[registerStrToInt(curOpcodeArg0)]) * (int64_t)atoi(registers[registerStrToInt(curOpcodeArg1)]);
 						sprintf(registers[registerStrToInt("$hi")], "%d",(int32_t)(res >> 32));
 						sprintf(registers[registerStrToInt("$lo")], "%d",(int32_t)(res));
 						break;
+					}
 					case NOR:
 						sprintf(registers[registerStrToInt(curOpcodeArg0)],"%d",~(atoi(registers[registerStrToInt(curOpcodeArg1)])|atoi(registers[registerStrToInt(curOpcodeArg2)])));
 						break;
