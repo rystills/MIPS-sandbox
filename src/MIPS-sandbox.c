@@ -578,7 +578,7 @@ void runSimulation() {
 						sprintf(registers[registerStrToInt(curOpcodeArg0)],"%d",atoi(registers[registerStrToInt(curOpcodeArg1)])&atoi(registers[registerStrToInt(curOpcodeArg2)]));
 						break;
 					case DIV:
-						// TODO: use trap execption for div by 0
+						// TODO: use trap exception for div by 0
 						if (atoi(registers[registerStrToInt(curOpcodeArg1)]) != 0) {
 							sprintf(registers[registerStrToInt("$hi")], "%d",atoi(registers[registerStrToInt(curOpcodeArg0)]) % atoi(registers[registerStrToInt(curOpcodeArg1)]));
 							sprintf(registers[registerStrToInt("$lo")], "%d",atoi(registers[registerStrToInt(curOpcodeArg0)]) / atoi(registers[registerStrToInt(curOpcodeArg1)]));
@@ -699,6 +699,40 @@ void runSimulation() {
 						break;
 					case JR:
 						nextPc = atoi(registers[registerStrToInt(curOpcodeArg0)]);
+						break;
+					// load/store
+					// TODO: reimplement memory
+					case LB:
+						break;
+					case LBU:
+						break;
+					case LH:
+						break;
+					case LHU:
+						break;
+					case LW:
+						break;
+					case SB:
+						break;
+					case SH:
+						break;
+					case SW:
+						break;
+					// misc
+					case MFHI:
+						sprintf(registers[registerStrToInt(curOpcodeArg0)],"%d",atoi(registers[registerStrToInt("$hi")]));
+						break;
+					case MFLO:
+						sprintf(registers[registerStrToInt(curOpcodeArg0)],"%d",atoi(registers[registerStrToInt("$lo")]));
+						break;
+					case MTHI:
+						sprintf(registers[registerStrToInt("$hi")],"%d",atoi(registers[registerStrToInt(curOpcodeArg0)]));
+						break;
+					case MTLO:
+						sprintf(registers[registerStrToInt("$lo")],"%d",atoi(registers[registerStrToInt(curOpcodeArg0)]));
+						break;
+					case TRAP:
+						//TODO: add trap / exception support
 						break;
 					}
 				}
